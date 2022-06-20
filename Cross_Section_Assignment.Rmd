@@ -217,3 +217,26 @@ tidy(OLS_model2); glance(OLS_model2)
 summary(OLS_model2)
 ```
 
+
+```{r}
+fmxdat::source_all("./code")
+
+sa_df_alt <- sa_df_alt %>%  experiment_aggregate(.) %>% 
+    experiment_trim(.)
+```
+
+
+```{r}
+
+OLS_model_exp <- plm(sa_df_alt$death_rate ~ sa_df_alt$stringency_index + sa_df_alt$aged_65_older + sa_df_alt$population_density + sa_df_alt$gdp_per_capita + sa_df_alt$extreme_poverty + sa_df_alt$diabetes_prevalence + sa_df_alt$smokers + sa_df_alt$handwashing_facilities + sa_df_alt$life_expectancy + sa_df_alt$human_development_index, data = sa_df_alt, 
+                  index = c("location", "date"), model = "pooling")
+
+tidy(OLS_model_exp); glance(OLS_model_exp)
+
+summary(OLS_model_exp)
+
+```
+
+
+
+
