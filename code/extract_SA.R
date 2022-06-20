@@ -126,7 +126,8 @@ extract_sa_alt <- function(path = "./data/owid-covid-data.csv",
 
 feature_adj_alt <- function(df){
 
-    df %<>% select(-c(aged_70_older, people_fully_vaccinated, people_vaccinated)) %>%
+    df %<>% select(-c(aged_70_older, people_fully_vaccinated, people_vaccinated,
+                      tests_per_case, positive_rate, population)) %>%
         replace(is.na(.), 0) %>%
         mutate(smokers = mean(c(female_smokers, male_smokers)), .keep = "unused")
 

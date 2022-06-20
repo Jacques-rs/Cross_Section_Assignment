@@ -134,8 +134,11 @@ continents
 
 ```{r South Africa}
 rm(continents)
-sa_df <- extract_sa_alt(country = "South Africa")
-africa_df <- extract_sa_alt(cont = "Africa")
+sa_df <- extract_sa(country = "South Africa")
+africa_df <- extract_sa(cont = "Africa")
+
+sa_df_alt <- extract_sa_alt(country = "South Africa")    
+
 
 ```
 
@@ -159,21 +162,35 @@ africa_df <- extract_sa_alt(cont = "Africa")
 
 ```{r Additional Features We Do Not Want}
 
-sa_df <- feature_adj_alt(sa_df)
-africa_df <- feature_adj_alt(africa_df)
+sa_df <- feature_adj(sa_df)
+africa_df <- feature_adj(africa_df)
     
-    
+sa_df_alt <- feature_adj_alt(sa_df_alt)    
+
 ```
 
 
 ```{r format for Regression}
+
 fmxdat::source_all("./code")
-sa_df <- regression_format_country_alt(sa_df)
-africa_df <- regression_format_country_alt(africa_df)
+
+sa_df <- regression_format_country(sa_df)
+africa_df <- regression_format_country(africa_df)
+
+sa_df_alt <- regression_format_country_alt(sa_df_alt)
 
 ```
 
 
+Towards estimating the fixed effects, let's see which variables do not change over
+the time period we have.
+
+
+```{r}
+
+# sa_df %>% summarise(std_dev = sd(gdp_per_capita))
+
+```
 
 
 
