@@ -104,8 +104,11 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 # Note: Include = FALSE implies the code is executed, but not printed in your pdf.
 # warning and message = FALSE implies ugly messages and warnings are removed from your pdf.
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
+library(pacman)
 
-pacman::p_load(tidyverse, dyplr, lurbidate)
+pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm)
+
+fmxdat::source_all("./code")
 
 ```
 
@@ -116,8 +119,85 @@ pacman::p_load(tidyverse, dyplr, lurbidate)
 
 
 
+```{r View continents}
+
+continents <- extract_continents()
+
+```
+
+Want to compare the US, with Europe, Africa (excluding SA), and SA (and maybe Asia, or specifically china)
+
+```{r}
+continents
+```
+
+
+```{r South Africa}
+rm(continents)
+sa_df <- extract_sa(country = "South Africa")
+africa_df <- extract_sa(cont = "Africa")
+
+```
+
+
+```{r }
+
+# Tests seems to have started from the first observation of the
+# dataset so all information might be relevant
+# sa_df %>% 
+#     mutate(test_date = if_else(!is.na(total_cases), sa_df$date, lubridate::ymd(20000101))) %>% 
+#     select(date, test_date) %>% ggplot() +
+#     geom_point(aes(x = date, y = test_date), color = "red",
+#                size = 0.5) #+
+#     #xlim(first(sa_df$date), last(sa_df$date))
+
+
+```
+
+
+[Share of woman vs men](https://www.statista.com/statistics/967928/total-population-of-south-africa-by-gender/) in SA about equal
+
+```{r Additional Features We Do Not Want}
+
+sa_df <- feature_adj(sa_df)
+africa_df <- feature_adj(africa_df)
+    
+    
+```
+
+
+```{r format for Regression}
+fmxdat::source_all("./code")
+sa_df <- regression_format_country(sa_df)
+africa_df <- regression_format_country(africa_df)
+
+```
 
 
 
 
+
+```{r}
+
+# WE want regress 
+africa_df %>% filter(day_of_week == "Sun") %>% ggplot() +
+    geom_line(aes(x = date, y = excess_mortality))
+
+```
+
+
+
+
+```{r}
+plm()
+OLS_model1 <- plm(africa_df$death_rate ~ africa_df$stringency_index,
+                  index = c("location", "date"), data = africa_df, model = "pooling")
+
+OLS_model2 <- plm(africa_df$death_rate ~ africa_df$stringency_index + africa_df$aged_65_older + africa_df$population_density + africa_df$gdp_per_capita + africa_df$extreme_poverty + africa_df$diabetes_prevalence + africa_df$smokers + africa_df$handwashing_facilities + africa_df$life_expectancy + africa_df$human_development_index, data = africa_df, 
+                  index = c("location", "date"), model = "pooling")
+
+tidy(OLS_model2); glance(OLS_model2)
+
+summary(OLS_model2)
+```
 
