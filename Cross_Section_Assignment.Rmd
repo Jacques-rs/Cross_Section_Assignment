@@ -134,8 +134,8 @@ continents
 
 ```{r South Africa}
 rm(continents)
-sa_df <- extract_sa(country = "South Africa")
-africa_df <- extract_sa(cont = "Africa")
+sa_df <- extract_sa_alt(country = "South Africa")
+africa_df <- extract_sa_alt(cont = "Africa")
 
 ```
 
@@ -159,8 +159,8 @@ africa_df <- extract_sa(cont = "Africa")
 
 ```{r Additional Features We Do Not Want}
 
-sa_df <- feature_adj(sa_df)
-africa_df <- feature_adj(africa_df)
+sa_df <- feature_adj_alt(sa_df)
+africa_df <- feature_adj_alt(africa_df)
     
     
 ```
@@ -168,8 +168,8 @@ africa_df <- feature_adj(africa_df)
 
 ```{r format for Regression}
 fmxdat::source_all("./code")
-sa_df <- regression_format_country(sa_df)
-africa_df <- regression_format_country(africa_df)
+sa_df <- regression_format_country_alt(sa_df)
+africa_df <- regression_format_country_alt(africa_df)
 
 ```
 
@@ -189,7 +189,6 @@ africa_df %>% filter(day_of_week == "Sun") %>% ggplot() +
 
 
 ```{r}
-plm()
 OLS_model1 <- plm(africa_df$death_rate ~ africa_df$stringency_index,
                   index = c("location", "date"), data = africa_df, model = "pooling")
 

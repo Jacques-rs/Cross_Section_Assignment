@@ -15,6 +15,20 @@ regression_format_country <- function(df){
 }
 
 
+regression_format_country_alt <- function(df){
+
+    df <- df %>%
+        mutate(day_of_week = lubridate::wday(date, label = T, week_start = 1)) %>%
+        mutate(death_rate = new_deaths/new_cases) %>%
+        replace(is.na(.), 0) %>%
+        mutate(death_rate = if(any(is.infinite(death_rate))){1}else{death_rate}) %>%
+        mutate(year = year(date))
+
+
+    return(df)
+}
+
+
 # regression_format_continent <- function(df){
 #
 #     cols_mean <- c("stringency_index", "population_density", "aged_65_older", "gdp_per_capita",
