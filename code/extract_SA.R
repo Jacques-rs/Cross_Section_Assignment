@@ -137,3 +137,33 @@ feature_adj_alt <- function(df){
     return(df)
 
 }
+
+
+extract_all <- function(path = "./data/owid-covid-data.csv"){
+
+    names1 <- c(".+smoothed.*", ".+per_million", ".+per_thousand", ".+per_hundred",
+                ".*cumulative.*", ".*weekly.*", "total.+")
+
+    continents <- extract_continents()$continent
+
+    df <- read_csv(file = path, show_col_types = F) %>%
+        filter(!location %in% c(continents)) %>%
+        filter(!is.na(continent)) %>%
+        filter(first(date) <= lubridate::ymd(20200430)) %>%
+        # Remove undesired features
+        select(-c(iso_code, continent, tests_units)) %>%
+        # Remove the extra features as mentioned above `names1`
+        .[, !grepl(names(.), pattern = paste(names1, collapse = "|"))]
+
+}
+
+feature_adj_all <- function(df){
+
+    df %<>% select(-c(aged_70_older, people_fully_vaccinated, people_vaccinated,
+                      tests_per_case, positive_rate, population)) %>%
+        # replace(is.na(.), 0) %>%
+        mutate(smokers = mean(c(female_smokers, male_smokers)), .keep = "unused")
+
+    return(df)
+
+}

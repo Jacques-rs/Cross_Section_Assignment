@@ -125,6 +125,41 @@ continents <- extract_continents()
 
 ```
 
+
+
+```{r, fig.width=8, fig.height=8}
+
+
+number_countries <- read_csv(file = "./data/owid-covid-data.csv",
+                          show_col_types = F) %>%
+    filter(!location %in% c(continents)) %>%
+    filter(date == first(date)) %>% 
+    select(location) %>% 
+    nrow()
+
+quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
+                          show_col_types = F) %>% 
+    group_by(location) %>% 
+    filter(date == first(date)) %>% 
+    ggplot() + 
+    geom_point(aes(x = location, y = date)) +
+    geom_hline(yintercept = lubridate::ymd(20200430), color = "red")
+    
+
+quick_check2
+
+
+number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
+                          show_col_types = F) %>% 
+    group_by(location) %>% 
+    filter(!location %in% c(continents)) %>% 
+    filter(date == first(date)) %>% 
+    filter(first(date) <= 20200430) %>% 
+    nrow()
+
+```
+
+
 Want to compare the US, with Europe, Africa (excluding SA), and SA (and maybe Asia, or specifically china)
 
 ```{r}
@@ -136,6 +171,18 @@ continents
 rm(continents)
 # sa_df <- extract_sa_alt(country = "South Africa")
 # africa_df <- extract_sa(cont = "Africa")
+
+range(sa_df[,"human_development_index"])
+
+select(names(sa_df))
+
+is_constant_feature(df){
+    
+    if(max() == min()){TRUE}else{FALSE}
+    
+}
+
+range()
 
 sa_df_alt <- extract_sa_alt(country = "South Africa")  
 africa_df_alt <- extract_sa_alt(cont = "Africa")
@@ -221,6 +268,9 @@ Checking the plots of all the features:
 
 ```{r}
 africa_df_alt %>% gather(., )
+
+
+
 ```
 
 
