@@ -1,58 +1,72 @@
 
 
 
-regression_format_country <- function(df){
-
-    df <- df %>%
-        mutate(day_of_week = lubridate::wday(date, label = T, week_start = 1)) %>%
-        mutate(death_rate = total_deaths/total_cases) %>%
-        replace(is.na(.), 0) %>%
-        mutate(death_rate = ifelse(is.infinite(death_rate), 1, death_rate)) %>%
-        mutate(year = year(date))
-
-
-    return(df)
-}
-
-
-regression_format_country_alt <- function(df){
-
-    df <- df %>%
-        mutate(day_of_week = lubridate::wday(date, label = T, week_start = 1)) %>%
-        # mutate(death_rate = new_deaths/new_cases) %>%
-        replace(is.na(.), 0) #%>%
-        # mutate(year = year(date))
+# regression_format_country <- function(df){
+#
+#     df <- df %>%
+#         mutate(day_of_week = lubridate::wday(date, label = T, week_start = 1)) %>%
+#         mutate(death_rate = total_deaths/total_cases) %>%
+#         replace(is.na(.), 0) %>%
+#         mutate(death_rate = ifelse(is.infinite(death_rate), 1, death_rate)) %>%
+#         mutate(year = year(date))
+#
+#
+#     return(df)
+# }
 
 
-    return(df)
-}
+# regression_format_country_alt <- function(df){
+#
+#     df <- df %>%
+#         mutate(day_of_week = lubridate::wday(date, label = T, week_start = 1)) %>%
+#         # mutate(death_rate = new_deaths/new_cases) %>%
+#         replace(is.na(.), 0) #%>%
+#         # mutate(year = year(date))
+#
+#
+#     return(df)
+# }
+
+
 
 
 # First need to aggregate data by year_week, then by
 # year_quarter
 
-# experiment_aggregate_week <- function(df){
-#
-#     mean_or_max <- function(df, col){
-#         if(sum(is.na(col)) == 6){
-#             df %>% replace(is.na(.), 0) %>% mutate(across(c(col), max))
-#         }else{
-#             df %>% replace(is.na(.), 0) %>% mutate(across(c(col), mean))
-#         }
-#     return(df)
-#     }
-#
-#     exclude = c("excess_mortality", "reproduction_rate",
-#                 "stringency_index", )
-#
-#     df <- df %>%
-#         mutate(year_week = paste(year(date), week(date))) %>%
-#         group_by(location, year_week) %>%
-#         mean_or_max(., col = "excess_mortality") %>%
-#         mutate(across(c()))
-#
-#
-# }
+experiment_aggregate_week <- function(df){
+
+    mean_or_max <- function(df, col){
+        if(sum(is.na(col)) == 6){
+            df %>% replace(is.na(.), 0) %>% mutate(across(c(col), max))
+        }else{
+            df %>% replace(is.na(.), 0) %>% mutate(across(c(col), mean))
+        }
+    return(df)
+    }
+
+    exclude = c("excess_mortality", "reproduction_rate",
+                "stringency_index")
+
+    constant_features <- c("gdp_per_capita", "population_density",
+                           "median_age", "aged_65_older",
+                           "extreme_poverty", "cardiovasc_death_rate",
+                           "diabetes_prevalence", "handwashing_facilities",
+                           "hosp_beds_1k", "life_expectancy",
+                           "human_development_index", "smokers")
+
+
+
+    df <- df %>%
+        mutate(year_week = paste(year(date), week(date), sep = "-")) %>%
+        relocate(year_week, .before = date) %>%
+        group_by(location, year_week) %>%
+        mutate(check_col = nrow(across(excess_mortality)) - is.na(across(excess_mortality))) %>%
+        # group_by(location, year_week) %>%
+        mean_or_max(., col = "excess_mortality") %>%
+        mutate(across(c()))
+
+
+}
 
 
 
@@ -60,6 +74,8 @@ regression_format_country_alt <- function(df){
 experiment_aggregate <- function(df){
 
     change <- c()
+
+
 
     df <- df %>%
         # select(-c("death_rate")) %>%

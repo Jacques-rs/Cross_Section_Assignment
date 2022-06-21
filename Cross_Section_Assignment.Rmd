@@ -154,8 +154,21 @@ number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
     group_by(location) %>% 
     filter(!location %in% c(continents)) %>% 
     filter(date == first(date)) %>% 
-    filter(first(date) <= 20200430) %>% 
-    nrow()
+    filter(!is.na(continent)) %>% 
+    filter(date <= lubridate::ymd(20200430)) %>% 
+    select(location) %>% 
+    unique()
+
+read_csv(file = "./data/owid-covid-data.csv",
+                          show_col_types = F) %>% 
+    group_by(location) %>% 
+    filter(!location %in% c(continents)) %>% 
+    filter(!is.na(continent)) %>% 
+    filter(first(date) <= lubridate::ymd(20200430)) %>% 
+    filter(date == first(date)) %>% 
+    select(location)
+
+
 
 ```
 
