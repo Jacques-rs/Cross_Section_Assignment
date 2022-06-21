@@ -87,6 +87,7 @@ extract_sa_alt <- function(path = "./data/owid-covid-data.csv",
             filter(location == country) %>%
             # Remove undesired features
             select(-c(iso_code, continent, tests_units)) %>%
+            rename(hosp_beds_1k = hospital_beds_per_thousand) %>%
             # Remove the extra features as mentioned above `names1`
             .[, !grepl(names(.), pattern = paste(names1, collapse = "|"))]
 
@@ -104,6 +105,8 @@ extract_sa_alt <- function(path = "./data/owid-covid-data.csv",
             filter(continent == cont) %>%
             # Remove undesired features
             select(-c(iso_code, tests_units)) %>%
+            rename(hosp_beds_1k = hospital_beds_per_thousand,
+                   cum_excess_mortality = excess_mortality_cumulative) %>%
             # Remove the extra features as mentioned above `names1`
             .[, !grepl(names(.), pattern = paste(names1, collapse = "|"))]
 

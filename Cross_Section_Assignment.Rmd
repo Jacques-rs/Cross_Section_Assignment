@@ -106,7 +106,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
 library(pacman)
 
-pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm)
+pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm, corrplot)
 
 fmxdat::source_all("./code")
 
@@ -134,10 +134,11 @@ continents
 
 ```{r South Africa}
 rm(continents)
-sa_df <- extract_sa(country = "South Africa")
-africa_df <- extract_sa(cont = "Africa")
+# sa_df <- extract_sa_alt(country = "South Africa")
+# africa_df <- extract_sa(cont = "Africa")
 
-sa_df_alt <- extract_sa_alt(country = "South Africa")    
+sa_df_alt <- extract_sa_alt(country = "South Africa")  
+africa_df_alt <- extract_sa_alt(cont = "Africa")
 
 
 ```
@@ -162,10 +163,12 @@ sa_df_alt <- extract_sa_alt(country = "South Africa")
 
 ```{r Additional Features We Do Not Want}
 
-sa_df <- feature_adj(sa_df)
-africa_df <- feature_adj(africa_df)
+# sa_df <- feature_adj(sa_df)
+# africa_df <- feature_adj(africa_df)
     
-sa_df_alt <- feature_adj_alt(sa_df_alt)    
+sa_df_alt <- feature_adj_alt(sa_df_alt)
+africa_df_alt <- feature_adj_alt(africa_df_alt)
+
 
 ```
 
@@ -174,10 +177,12 @@ sa_df_alt <- feature_adj_alt(sa_df_alt)
 
 fmxdat::source_all("./code")
 
-sa_df <- regression_format_country(sa_df)
-africa_df <- regression_format_country(africa_df)
+# sa_df <- regression_format_country(sa_df)
+# africa_df <- regression_format_country(africa_df)
 
 sa_df_alt <- regression_format_country_alt(sa_df_alt)
+africa_df_alt <- regression_format_country_alt(africa_df_alt)
+
 
 ```
 
@@ -197,22 +202,68 @@ the time period we have.
 ```{r}
 
 # WE want regress 
-africa_df %>% filter(day_of_week == "Sun") %>% ggplot() +
+africa_df_alt %>% filter(day_of_week == "Sun") %>% ggplot() +
     geom_line(aes(x = date, y = excess_mortality))
 
 ```
 
 
+```{r}
+fmxdat::source_all("./code")
+
+africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>% 
+    experiment_trim(.)
+
+```
+
+
+Checking the plots of all the features:
+
+```{r}
+africa_df_alt %>% gather(., )
+```
+
+
+we have to rescale the variables else the effect will never be detected in
+some cases
+
+
+```{r Scaling}
+
+
+
+```
+
+
+We need to have a look at the correlation between the different variables
+to see what type of relationships exist. 
+Furthermore, it is important to 
+<!-- determine correlations beyond mere linear correlations. -->
+
+```{r, fig.height=10, fig.width=10}
+
+africa_df_alt %>% filter()
+
+africa_df_alt %>% ungroup() %>% select(-c(location, date, continent, 
+                                          day_of_week, smokers, hosp_patients)) %>% 
+    cor(.) %>% 
+    corrplot(., method = "pie", order = "hclust", tl.srt=45, diag = F)
+
+```
+
 
 
 ```{r}
-OLS_model1 <- plm(africa_df$death_rate ~ africa_df$stringency_index,
-                  index = c("location", "date"), data = africa_df, model = "pooling")
+OLS_model1 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index,
+                  index = c("location", "date"), data = africa_df_alt, model = "pooling")
 
-OLS_model2 <- plm(africa_df$death_rate ~ africa_df$stringency_index + africa_df$aged_65_older + africa_df$population_density + africa_df$gdp_per_capita + africa_df$extreme_poverty + africa_df$diabetes_prevalence + africa_df$smokers + africa_df$handwashing_facilities + africa_df$life_expectancy + africa_df$human_development_index, data = africa_df, 
+OLS_model2 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index + africa_df_alt$aged_65_older + africa_df_alt$population_density + africa_df_alt$gdp_per_capita + africa_df_alt$extreme_poverty + africa_df_alt$diabetes_prevalence + africa_df_alt$smokers + africa_df_alt$handwashing_facilities + africa_df_alt$life_expectancy + africa_df_alt$human_development_index, data = africa_df_alt, 
                   index = c("location", "date"), model = "pooling")
 
-tidy(OLS_model2); glance(OLS_model2)
+tidy(OLS_model2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+
+
+# ; glance(OLS_model2)
 
 summary(OLS_model2)
 ```
