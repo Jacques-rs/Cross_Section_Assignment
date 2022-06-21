@@ -149,9 +149,12 @@ extract_all <- function(path = "./data/owid-covid-data.csv"){
     df <- read_csv(file = path, show_col_types = F) %>%
         filter(!location %in% c(continents)) %>%
         filter(!is.na(continent)) %>%
+        group_by(location) %>%
         filter(first(date) <= lubridate::ymd(20200430)) %>%
+        ungroup() %>%
         # Remove undesired features
         select(-c(iso_code, continent, tests_units)) %>%
+        rename(hosp_beds_1k = hospital_beds_per_thousand) %>%
         # Remove the extra features as mentioned above `names1`
         .[, !grepl(names(.), pattern = paste(names1, collapse = "|"))]
 
@@ -163,7 +166,7 @@ feature_adj_all <- function(df){
                       tests_per_case, positive_rate, population)) %>%
         group_by(location) %>%
         # replace(is.na(.), 0) %>%
-        mutate(smokers = mean(c(female_smokers, male_smokers)))
+        mutate(smokers = mean(c(female_smokers, male_smokers)), .keep = "unused")
 
     return(df)
 
