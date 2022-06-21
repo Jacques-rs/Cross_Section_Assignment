@@ -35,17 +35,15 @@
 
 experiment_aggregate_week <- function(df){
 
-    mean_or_max <- function(df, col){
-        if(sum(is.na(col)) == 6){
-            df %>% replace(is.na(.), 0) %>% mutate(across(c(col), max))
-        }else{
-            df %>% replace(is.na(.), 0) %>% mutate(across(c(col), mean))
-        }
-    return(df)
-    }
+    # mean_or_max <- function(df, col){
+    #     if(sum(is.na(col)) == 6){
+    #         df %>% replace(is.na(.), 0) %>% mutate(across(c(col), max))
+    #     }else{
+    #         df %>% replace(is.na(.), 0) %>% mutate(across(c(col), mean))
+    #     }
+    # return(df)
+    # }
 
-    exclude = c("excess_mortality", "reproduction_rate",
-                "stringency_index")
 
     constant_features <- c("gdp_per_capita", "population_density",
                            "median_age", "aged_65_older",
@@ -54,16 +52,20 @@ experiment_aggregate_week <- function(df){
                            "hosp_beds_1k", "life_expectancy",
                            "human_development_index", "smokers")
 
-
+    mean_cols = c("reproduction_rate",
+                "stringency_index")
 
     df <- df %>%
-        mutate(year_week = paste(year(date), week(date), sep = "-")) %>%
-        relocate(year_week, .before = date) %>%
-        group_by(location, year_week) %>%
-        mutate(check_col = nrow(across(excess_mortality)) - is.na(across(excess_mortality))) %>%
+        replace(is.na(.), 0) %>%
+        select(-excess_mortality) %>%
+        mutate(year_quarter = paste(year(date), quarter(date), sep = "-")) %>%
+        relocate(year_quarter, .before = date) %>%
+        group_by(location, year_quarter) %>%
+        # mutate(one_day = n() - sum(is.na(excess_mortality))) %>%
+        # relocate(one_day, .after = excess_mortality) %>%
         # group_by(location, year_week) %>%
-        mean_or_max(., col = "excess_mortality") %>%
-        mutate(across(c()))
+        mutate(across(-c(constant_features, mean_cols, date), sum),
+               across(mean_cols, mean))
 
 
 }
@@ -109,7 +111,7 @@ experiment_trim <- function(df){
         ungroup() %>%
         select(-c(year_quarter)) %>%
         group_by(location, date) %>%
-        mutate(death_rate = new_deaths/new_cases, .keep = "unused") %>%
+        mutate(death_rate = (new_deaths/new_cases)*100, .keep = "unused") %>%
         replace(is.na(.), 0) %>%
 
         return(df)
