@@ -313,10 +313,12 @@ world_df <- extract_all() %>%
     feature_adj_all() %>% 
     experiment_aggregate_week() %>% 
     experiment_trim() %>% 
-    relocate(death_rate, .before = reproduction_rate)
+    relocate(afflicted_rate, .before = reproduction_rate)
 
 ```
 
+
+#Cumulative Values
 
 ```{r,Check range of variying columns}
 options(scipen=999)
@@ -325,6 +327,14 @@ fmxdat::source_all("./code")
 cols_range(world_df)
 options(scipen=0)
 ```
+
+```{r}
+world_df %>% ggplot(aes(fill=location, y = afflicted_rate/206, x = date)) +
+    geom_area(position = "stack", stat = "identity", alpha = 0.5) +
+    theme(legend.position="none") 
+```
+
+
 
 
 ```{r}
@@ -337,6 +347,8 @@ world_df <- world_df %>% scale_bigs_cumsum(.)
 ```
 
 
+# Scaling
+
 
 ```{r,Check range of variying columns}
 options(scipen=999)
@@ -347,7 +359,7 @@ options(scipen=0)
 ```
 
 
-Thus, want to scale: `hosp_patients, new_test, new_vaccinations`
+Thus, want to scale: `new_test, new_vaccinations`
 
 
 ```{r}
@@ -398,40 +410,6 @@ world_df %>% ungroup() %>% group_by(location) %>%
 ```
 
 
-```{r}
-world_df %>% ungroup() %>% group_by(location) %>% 
-    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
-    # filter(date == last(date)) %>% 
-    ggplot(aes(x = date, y = hosp_patients, group = location, col = location)) +
-    geom_line() +
-    theme(axis.text.x = element_text(size = 10),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("hosp_patients_per_1000") +
-    labs(title = "Plot name") +
-    geom_label_repel(aes(label = label),
-              nudge_x = 1,
-              na.rm = TRUE) +
-    theme(legend.position="none")
-```
-
-
-```{r}
-world_df %>% ungroup() %>% group_by(location) %>% 
-    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
-    # filter(date == last(date)) %>% 
-    ggplot(aes(x = date, y = icu_patients, group = location, col = location)) +
-    geom_line() +
-    theme(axis.text.x = element_text(size = 10),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("icu_patients_per_1000") +
-    labs(title = "Plot name") +
-    geom_label_repel(aes(label = label),
-              nudge_x = 1,
-              na.rm = TRUE) +
-    theme(legend.position="none")
-```
 
 
 ```{r}
@@ -439,7 +417,7 @@ world_df <- world_df %>% scale_bigs_scale()
 ```
 
 
-
+## Country specific feature scaling
 
 Now, to check the scales of the features that remain constant per country:
 
@@ -515,6 +493,7 @@ g3 <- world_df %>% ungroup() %>% group_by(location) %>%
          # subtitle = "Presence of outliers suggests scaling\nsuch that outliers remain\nrelatively present, i.e. normalisation")
 ```
 
+### Plot
 
 ```{r}
 
@@ -542,10 +521,93 @@ options(scipen=0)
 
 
 ```{r}
-mod_ols_1 <- plm(world_df$death_rate ~ world_df$stringency_index,
+world_df %>% ungroup() %>% group_by(location) %>% 
+    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
+    # filter(date == last(date)) %>% 
+    ggplot(aes(x = date, y = afflicted_rate, group = location, col = location)) +
+    geom_line() +
+    theme(axis.text.x = element_text(size = 10),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("") +
+    labs(title = "") +
+    geom_label_repel(aes(label = label),
+              nudge_x = 1,
+              na.rm = TRUE) +
+    theme(legend.position="none")
+```
+
+
+## OLS
+
+```{r}
+mod_ols_1 <- plm(world_df$afflicted_rate ~ world_df$stringency_index,
+                  index = c("location", "date"), data = world_df, model = "pooling")
+summary(mod_ols_1)
+
+```
+
+
+```{r}
+
+mod_ols_2 <- plm(afflicted_rate ~ stringency_index + smokers 
+                 + handwashing_facilities + ,
                   index = c("location", "date"), data = world_df, model = "pooling")
 
-# world_df %>% 
+```
+
+
+
+```{r}
+mod_ols_3 <- plm(world_df$afflicted_rate ~ world_df$stringency_index + world_df$aged_65_older + world_df$gdp_per_capita + world_df$extreme_poverty + world_df$diabetes_prevalence + world_df$smokers + world_df$handwashing_facilities + world_df$life_expectancy + world_df$human_development_index, data = world_df,
+                  index = c("location", "date"), model = "pooling")
+
+# tidy(mod_ols_2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+
+
+# ; glance(mod_ols_2)
+
+
+```
+
+# Semester
+
+```{r}
+fmxdat::source_all("./code")
+world_semester_df <- extract_all() %>% 
+    feature_adj_all() %>% 
+    aggregate_semester() %>% 
+    trim_semester() %>% 
+    relocate(death_rate, .before = reproduction_rate) %>% 
+    relocate(afflicted_rate, .before = death_rate)
+
+
+```
+
+
+```{r}
+world_semester_df <- world_semester_df %>% scale_bigs_cumsum(.)
+```
+
+
+
+```{r}
+world_semester_df <- world_semester_df %>% scale_bigs_constant(.)
+```
+
+
+```{r}
+options(scipen=999)
+world_semester_df %>% cols_range(df = ., constant_features = c("location", "date"))
+options(scipen=0)
+```
+
+
+```{r}
+mod_ols_1_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$stringency_index,
+                  index = c("location", "date"), data = world_semester_df, model = "pooling")
+
+# world_semester_df %>% 
 #     mutate(year_quarter = paste(year(date), quarter(date), sep = "")) %>% 
 #     relocate(year_quarter, .before = date) %>% 
 #     dummy.code(year_quarter)
@@ -556,20 +618,35 @@ add_year_dummy <- function(df){
     
 }
 
-# mod_ols_2 <- plm()
+# mod_ols_2_sem <- plm()
 
-mod_ols_3 <- plm(world_df$death_rate ~ world_df$stringency_index + world_df$aged_65_older + world_df$gdp_per_capita + world_df$extreme_poverty + world_df$diabetes_prevalence + world_df$smokers + world_df$handwashing_facilities + world_df$life_expectancy + world_df$human_development_index, data = world_df,
+mod_ols_3_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$stringency_index + world_semester_df$aged_65_older + world_semester_df$gdp_per_capita + world_semester_df$extreme_poverty + world_semester_df$diabetes_prevalence + world_semester_df$smokers + world_semester_df$handwashing_facilities + world_semester_df$life_expectancy + world_semester_df$human_development_index, data = world_semester_df,
                   index = c("location", "date"), model = "pooling")
 
-# tidy(mod_ols_2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+# tidy(mod_ols_2_sem) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
 
 
-# ; glance(mod_ols_2)
+# ; glance(mod_ols_2_sem)
 
-summary(mod_ols_3)
+summary(mod_ols_3_sem)
 ```
 
+# Correlation
+
+```{r, fig.width=8}
 
 
+world_df %>% ungroup() %>% select(-c(location, date, new_tests, 
+                                     gdp_per_capita, population_density,
+                                     median_age)) %>%
+    cor(.) %>%
+    corrplot(., method = "color", order = "hclust", tl.srt=0, diag = F,
+             tl.col = "black", addCoef.col = "black",
+             tl.pos = "l",
+             tl.cex = 0.8,
+             number.font = 8,
+             type = "lower")
+
+```
 
 

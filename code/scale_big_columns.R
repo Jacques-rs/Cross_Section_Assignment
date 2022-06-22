@@ -18,14 +18,14 @@ cols_range <- function(df, constant_features = c("gdp_per_capita", "population_d
 
 
 
-scale_bigs_cumsum <- function(df, big_cols = c("icu_patients", "hosp_patients",
-                                        "new_tests", "new_vaccinations")){
+scale_bigs_cumsum <- function(df, big_cols = c("new_tests", "new_vaccinations")){
 
 
     df <- df %>%
         ungroup() %>%
         group_by(location) %>%
-        mutate(across(big_cols, function(x) cumsum(x))) %>%
+        mutate(across(big_cols, function(x) cumsum(x),
+                      .names = "{.col}_cum_per_1000")) %>%
 
 
 
@@ -34,13 +34,12 @@ scale_bigs_cumsum <- function(df, big_cols = c("icu_patients", "hosp_patients",
 
 }
 
-scale_bigs_scale <- function(df, big_cols = c("new_vaccinations",
-                                              "hosp_patients", "new_tests")){
+scale_bigs_scale <- function(df, big_cols = c("new_vaccinations", "new_tests")){
 
 
     df <- df %>%
         ungroup() %>%
-        mutate(across(big_cols, function(x) scale(x)))
+        mutate(across(big_cols, function(x) scale(x), .names = .col))
 
 
     return(df)
@@ -73,9 +72,11 @@ scale_bigs_constant <- function(df){
 
     df <- df %>%
         ungroup() %>%
-        mutate(across(c("population_density", "cardiovasc_death_rate"), function(x) scale(x, center = T)),
-               gdp_per_capita = if_else(gdp_per_capita == 0, 0, log(gdp_per_capita))) %>%
-        mutate(human_development_index = human_development_index * 10)
+        mutate(across(c("population_density", "cardiovasc_death_rate"),
+                      function(x) scale(x, center = T), .names = "{.col}_norm"),
+               across(c("gdp_per_capita"), function(x) if_else(x == 0, 0, log(x)),
+                      .names = "{.col}_log"),
+               across(c("human_development_index"), function(x) x * 100, .names = "{.cols}"))
 
     return(df)
 }

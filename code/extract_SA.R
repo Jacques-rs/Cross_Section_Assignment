@@ -167,8 +167,8 @@ feature_adj_all <- function(df){
     df %<>%
         mutate(new_vaccinations = (new_vaccinations/population) * 1000) %>%
         mutate(new_tests = (new_tests/population) * 1000) %>%
-        mutate(hosp_patients = (hosp_patients/population) * 1000000) %>%
-        mutate(icu_patients = (icu_patients/population) * 1000000) %>%
+        # mutate(hosp_patients = (hosp_patients/population) * 1000000) %>%
+        # mutate(icu_patients = (icu_patients/population) * 1000000) %>%
 
         # mutate(new_vaccinations = new_vaccinations) %>%
         # mutate(new_tests = new_tests) %>%

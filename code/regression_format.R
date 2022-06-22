@@ -35,15 +35,6 @@
 
 experiment_aggregate_week <- function(df){
 
-    # mean_or_max <- function(df, col){
-    #     if(sum(is.na(col)) == 6){
-    #         df %>% replace(is.na(.), 0) %>% mutate(across(c(col), max))
-    #     }else{
-    #         df %>% replace(is.na(.), 0) %>% mutate(across(c(col), mean))
-    #     }
-    # return(df)
-    # }
-
 
     constant_features <- c("gdp_per_capita", "population_density",
                            "median_age", "aged_65_older",
@@ -75,33 +66,6 @@ experiment_aggregate_week <- function(df){
 
 
 
-# experiment_aggregate <- function(df){
-#
-#     change <- c()
-#
-#
-#
-#     df <- df %>%
-#         # select(-c("death_rate")) %>%
-#         # need to create a col that indicates which quarter of which year it is
-#         mutate(year_quarter = paste(year(date), quarter(date), sep = "-")) %>%
-#         # Then I need to groupby this new Quarter_Year variable to aggreagte the
-#         # df by this metrics
-#         group_by(location) %>%
-#         # take care of the fact that certain features are only recorded on a weekly basis
-#         fill() %>%
-#         group_by(location, year_quarter) %>%
-#         # Calculate the average values for those metrics that we need average values for
-#         mutate(across(names(df[, grepl(x = names(df), pattern = "new.+")]), sum),
-#                across(c("stringency_index", "excess_mortality"), mean)) #%>%
-#         # # We might want to calculate the avg change in the variables to
-#         # # make the regression estimates more accurate
-#         # mutate(across())
-#
-#         return(df)
-# }
-
-
 experiment_trim <- function(df){
 
     df <- df %>%
@@ -112,24 +76,63 @@ experiment_trim <- function(df){
         ungroup() %>%
         select(-c(year_quarter)) %>%
         group_by(location, date) %>%
-        mutate(death_rate = (new_deaths/new_cases)*100, .keep = "unused") %>%
+        # mutate(death_rate = (new_deaths/new_cases)*100) %>%
+        mutate(afflicted_rate = ((new_deaths + icu_patients + hosp_patients)/new_cases)*100,
+               .keep = "unused") %>%
         replace(is.na(.), 0)
 
         return(df)
 
 }
 
-# experiment_scale <- function(df){
-#
-#
-#
-# }
+
+aggregate_semester <- function(df){
+
+
+    constant_features <- c("gdp_per_capita", "population_density",
+                           "median_age", "aged_65_older",
+                           "extreme_poverty", "cardiovasc_death_rate",
+                           "diabetes_prevalence", "handwashing_facilities",
+                           "hosp_beds_1k", "life_expectancy",
+                           "human_development_index", "smokers")
+
+    mean_cols = c("reproduction_rate",
+                  "stringency_index")
+
+    df <- df %>%
+        replace(is.na(.), 0) %>%
+        select(-excess_mortality) %>%
+        mutate(year_semester = paste(year(date), semester(date), sep = "-")) %>%
+        relocate(year_semester, .before = date) %>%
+        group_by(location, year_semester) %>%
+        # mutate(one_day = n() - sum(is.na(excess_mortality))) %>%
+        # relocate(one_day, .after = excess_mortality) %>%
+        # group_by(location, year_week) %>%
+        mutate(across(-c(constant_features, mean_cols, date), sum),
+               across(c(mean_cols), function(x) mean(x))) %>%
+        ungroup()
+
+    return(df)
+
+}
 
 
 
-# africa_df_alt %>%
-#     mutate(across(names(df[, grepl(x = names(df), pattern = "new.+")]), sum),
-#            across(c("stringency_index", "excess_mortality"), mean))
+trim_semester <- function(df){
 
+    df <- df %>%
+        group_by(location, year_semester) %>%
+        # filter(last(year_quarter)) %>%
+        filter(row_number() == n()) %>%
+        # slice(tail(row_number(), 1)) %>%
+        ungroup() %>%
+        select(-c(year_semester)) %>%
+        group_by(location, date) %>%
+        # mutate(death_rate = (new_deaths/new_cases)*100) %>%
+        mutate(afflicted_rate = ((new_deaths + icu_patients + hosp_patients)/new_cases)*100,
+               .keep = "unused") %>%
+        replace(is.na(.), 0)
 
+    return(df)
 
+}
