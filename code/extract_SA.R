@@ -164,7 +164,18 @@ extract_all <- function(path = "./data/owid-covid-data.csv"){
 
 feature_adj_all <- function(df){
 
-    df %<>% select(-c(aged_70_older, people_fully_vaccinated, people_vaccinated,
+    df %<>%
+        mutate(new_vaccinations = (new_vaccinations/population) * 1000) %>%
+        mutate(new_tests = (new_tests/population) * 1000) %>%
+        mutate(hosp_patients = (hosp_patients/population) * 1000000) %>%
+        mutate(icu_patients = (icu_patients/population) * 1000000) %>%
+
+        # mutate(new_vaccinations = new_vaccinations) %>%
+        # mutate(new_tests = new_tests) %>%
+        # mutate(hosp_patients = hosp_patients) %>%
+        # mutate(icu_patients = icu_patients) %>%
+
+        select(-c(aged_70_older, people_fully_vaccinated, people_vaccinated,
                       tests_per_case, positive_rate, population)) %>%
         group_by(location) %>%
         # replace(is.na(.), 0) %>%

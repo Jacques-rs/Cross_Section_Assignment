@@ -106,7 +106,9 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
 library(pacman)
 
-pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm, corrplot, psych)
+pacman::p_load(tidyverse, dplyr, lubridate, AER, 
+               broom, plm, corrplot, psych, ggrepel,
+               gridExtra)
 
 fmxdat::source_all("./code")
 
@@ -127,54 +129,54 @@ continents <- extract_continents()
 
 
 
-```{r, fig.width=8, fig.height=8}
+```{r}
 
 
-number_countries <- read_csv(file = "./data/owid-covid-data.csv",
-                          show_col_types = F) %>%
-    filter(!location %in% c(continents)) %>%
-    filter(date == first(date)) %>% 
-    select(location) %>% 
-    nrow()
+# number_countries <- read_csv(file = "./data/owid-covid-data.csv",
+#                           show_col_types = F) %>%
+#     filter(!location %in% c(continents)) %>%
+#     filter(date == first(date)) %>% 
+#     select(location) %>% 
+#     nrow()
 ```
 
 
 ```{r}
-quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
-                          show_col_types = F) %>% 
-    group_by(location) %>% 
-    filter(date == first(date)) %>% 
-    ggplot() + 
-    geom_point(aes(x = location, y = date)) +
-    geom_hline(yintercept = lubridate::ymd(20200430), color = "red")
-    
-
-quick_check2
+# quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
+#                           show_col_types = F) %>% 
+#     group_by(location) %>% 
+#     filter(date == first(date)) %>% 
+#     ggplot() + 
+#     geom_point(aes(x = location, y = date)) +
+#     geom_hline(yintercept = lubridate::ymd(20200430), color = "red")
+#     
+# 
+# quick_check2
 ```
 
 
 ```{r}
-number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
-                          show_col_types = F) %>% 
-    group_by(location) %>% 
-    filter(!location %in% c(continents)) %>% 
-    filter(date == first(date)) %>% 
-    filter(!is.na(continent)) %>% 
-    filter(date <= lubridate::ymd(20200430)) %>% 
-    select(location) %>% 
-    unique()
+# number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
+#                           show_col_types = F) %>% 
+#     group_by(location) %>% 
+#     filter(!location %in% c(continents)) %>% 
+#     filter(date == first(date)) %>% 
+#     filter(!is.na(continent)) %>% 
+#     filter(date <= lubridate::ymd(20200430)) %>% 
+#     select(location) %>% 
+#     unique()
 ```
 
 
 ```{r}
-read_csv(file = "./data/owid-covid-data.csv",
-                          show_col_types = F) %>% 
-    group_by(location) %>% 
-    filter(!location %in% c(continents)) %>% 
-    filter(!is.na(continent)) %>% 
-    filter(first(date) <= lubridate::ymd(20200430)) %>% 
-    filter(date == first(date)) %>% 
-    select(location)
+# read_csv(file = "./data/owid-covid-data.csv",
+#                           show_col_types = F) %>% 
+#     group_by(location) %>% 
+#     filter(!location %in% c(continents)) %>% 
+#     filter(!is.na(continent)) %>% 
+#     filter(first(date) <= lubridate::ymd(20200430)) %>% 
+#     filter(date == first(date)) %>% 
+#     select(location)
 
 
 
@@ -192,16 +194,6 @@ continents
 rm(continents)
 # sa_df <- extract_sa_alt(country = "South Africa")
 # africa_df <- extract_sa(cont = "Africa")
-
-# range(sa_df[,"human_development_index"])
-
-# select(names(sa_df))
-
-# is_constant_feature(df){
-#     
-#     if(max() == min()){TRUE}else{FALSE}
-#     
-# }
 
 
 # sa_df_alt <- extract_sa_alt(country = "South Africa")  
@@ -254,42 +246,12 @@ fmxdat::source_all("./code")
 ```
 
 
-Towards estimating the fixed effects, let's see which variables do not change over
-the time period we have.
-
-
-```{r}
-
-# sa_df %>% summarise(std_dev = sd(gdp_per_capita))
-
-```
-
-
-
-```{r}
-
-# WE want regress 
-# africa_df_alt %>% filter(day_of_week == "Sun") %>% ggplot() +
-#     geom_line(aes(x = date, y = excess_mortality))
-
-```
-
 
 ```{r}
 fmxdat::source_all("./code")
 
 # africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>% 
 #     experiment_trim(.)
-
-```
-
-
-Checking the plots of all the features:
-
-```{r}
-# africa_df_alt %>% gather(., )
-
-
 
 ```
 
@@ -338,36 +300,21 @@ fmxdat::source_all("./code")
 ```
 
 
-```{r}
-# 
-# OLS_model_exp <- plm(sa_df_alt$death_rate ~ sa_df_alt$stringency_index + sa_df_alt$aged_65_older + sa_df_alt$population_density + sa_df_alt$gdp_per_capita + sa_df_alt$extreme_poverty + sa_df_alt$diabetes_prevalence + sa_df_alt$smokers + sa_df_alt$handwashing_facilities + sa_df_alt$life_expectancy + sa_df_alt$human_development_index, data = sa_df_alt, 
-#                   index = c("location", "date"), model = "pooling")
-# 
-# tidy(OLS_model_exp); glance(OLS_model_exp)
-# 
-# summary(OLS_model_exp)
-
-```
-
-
 
 ```{r}
 fmxdat::source_all("./code")
+# New vaccinations is transformed to new_vaccinations relative to population size
+# i.e. per 1000 people
+# Same goes for new_tests
+# hosp_paitents, per 1000000
+# as well as icu
+
 world_df <- extract_all() %>% 
     feature_adj_all() %>% 
     experiment_aggregate_week() %>% 
     experiment_trim() %>% 
     relocate(death_rate, .before = reproduction_rate)
 
-```
-
-
-
-```{r}
-read_csv(file = "./data/owid-covid-data.csv",
-         show_col_types = F) %>% select(reproduction_rate) %>% 
-    replace(is.na(.), 0) %>% 
-    range()
 ```
 
 
@@ -379,16 +326,120 @@ cols_range(world_df)
 options(scipen=0)
 ```
 
-Thus, want to scale: `icu_patients, hosp_patients, new_test, new_vaccinations`
 
 ```{r}
 
 fmxdat::source_all("./code")
 
-world_df <- world_df %>% scale_bigs(world_df)
+world_df <- world_df %>% scale_bigs_cumsum(.)
 
 
 ```
+
+
+
+```{r,Check range of variying columns}
+options(scipen=999)
+fmxdat::source_all("./code")
+
+cols_range(world_df)
+options(scipen=0)
+```
+
+
+Thus, want to scale: `hosp_patients, new_test, new_vaccinations`
+
+
+```{r}
+
+
+
+# world_df %>% gather(big, big_cols,
+#                     c("icu_patients", "hosp_patients",
+#                       "new_tests", "new_vaccinations")) %>%
+#     ggplot()
+
+
+
+world_df %>% ungroup() %>% group_by(location) %>% 
+    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
+    # filter(date == last(date)) %>% 
+    ggplot(aes(x = date, y = new_tests, group = location, col = location)) +
+    geom_line() +
+    theme(axis.text.x = element_text(size = 10),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("cumulative_new_tests_per_1000") +
+    labs(title = "Plot name") +
+    geom_label_repel(aes(label = label),
+              nudge_x = 1,
+              na.rm = TRUE) +
+    theme(legend.position="none")
+
+
+```
+
+
+```{r}
+world_df %>% ungroup() %>% group_by(location) %>% 
+    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
+    # filter(date == last(date)) %>% 
+    ggplot(aes(x = date, y = new_vaccinations, group = location, col = location)) +
+    geom_line() +
+    theme(axis.text.x = element_text(size = 10),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("cumulative_new_vaccinations_per_1000") +
+    labs(title = "Plot name") +
+    geom_label_repel(aes(label = label),
+              nudge_x = 1,
+              na.rm = TRUE) +
+    theme(legend.position="none")
+```
+
+
+```{r}
+world_df %>% ungroup() %>% group_by(location) %>% 
+    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
+    # filter(date == last(date)) %>% 
+    ggplot(aes(x = date, y = hosp_patients, group = location, col = location)) +
+    geom_line() +
+    theme(axis.text.x = element_text(size = 10),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("hosp_patients_per_1000") +
+    labs(title = "Plot name") +
+    geom_label_repel(aes(label = label),
+              nudge_x = 1,
+              na.rm = TRUE) +
+    theme(legend.position="none")
+```
+
+
+```{r}
+world_df %>% ungroup() %>% group_by(location) %>% 
+    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
+    # filter(date == last(date)) %>% 
+    ggplot(aes(x = date, y = icu_patients, group = location, col = location)) +
+    geom_line() +
+    theme(axis.text.x = element_text(size = 10),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("icu_patients_per_1000") +
+    labs(title = "Plot name") +
+    geom_label_repel(aes(label = label),
+              nudge_x = 1,
+              na.rm = TRUE) +
+    theme(legend.position="none")
+```
+
+
+```{r}
+world_df <- world_df %>% scale_bigs_scale()
+```
+
+
+
 
 Now, to check the scales of the features that remain constant per country:
 
@@ -407,23 +458,75 @@ Additional features that need to be scaled are this
 ```{r}
 # first, double check cardiovascular death rate
 
-world_df %>% ungroup() %>% group_by(location) %>% 
+# constant_features = c("gdp_per_capita", "population_density",
+#                                                            "median_age", "aged_65_older",
+#                                                            "extreme_poverty",
+#                                                       "cardiovasc_death_rate",
+#                                                            "diabetes_prevalence",
+#                                                       "handwashing_facilities",
+#                                                            "hosp_beds_1k", "life_expectancy",
+#                                                            "human_development_index", "smokers")
+
+# world_df %>% ungroup() %>% gather("location", constants, vars(c("location", constant_features)))
+
+g1 <- world_df %>% ungroup() %>% group_by(location) %>% 
     filter(date == last(date)) %>% 
     ggplot() +
-    geom_point(aes(x = location, y = cardiovasc_death_rate)) +
+    geom_point(aes(x = reorder(location, cardiovasc_death_rate, mean), y = cardiovasc_death_rate)) +
     theme(axis.text.x = element_blank(),
       axis.title = element_text(face = "bold"),
       axis.line = element_line(colour = "grey50", size = 1)) +
     scale_y_continuous("Cardiovascular Death Rate") +
-    labs(title = "Plot of Distribution of Cardiovascular Death Rate per Country")
+    scale_x_discrete("Country") +
+    labs(title = "Cardiovascular Death Rate")
+         # subtitle = "More or less linear i.e. normalisation scaling")
+
 ```
 
 
 
 
 ```{r}
+g2 <- world_df %>% ungroup() %>% group_by(location) %>% 
+    filter(date == last(date)) %>% 
+    ggplot() +
+    geom_point(aes(x = reorder(location, gdp_per_capita, mean), y = gdp_per_capita)) +
+    theme(axis.text.x = element_blank(),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("GDP per Capita") +
+        scale_x_discrete("Country") +
+    labs(title = "GDP per capita")
+         # subtitle = "Nonlinear distribution suggests a\nlog transformation")
 
-world <- world_df %>% scale_bigs_constant()
+```
+
+```{r}
+g3 <- world_df %>% ungroup() %>% group_by(location) %>% 
+    filter(date == last(date)) %>% 
+    ggplot() +
+    geom_point(aes(x = reorder(location, population_density, mean), y = population_density)) +
+    theme(axis.text.x = element_blank(),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("Population Density") +
+    scale_x_discrete("Country") +
+    labs(title = "Population Density")
+         # subtitle = "Presence of outliers suggests scaling\nsuch that outliers remain\nrelatively present, i.e. normalisation")
+```
+
+
+```{r}
+
+grid.arrange(g1, g2, g3, nrow=2)
+
+```
+
+
+
+```{r}
+
+world_df <- world_df %>% scale_bigs_constant(.)
     
 
 ```
@@ -433,8 +536,40 @@ Now we can check all the descriptive stats for all the columns
 
 ```{r}
 options(scipen=999)
-world_df %>% ungroup() %>% select(-c(location, date)) %>% describe()
+world_df %>% cols_range(df = ., constant_features = c("location", "date"))
 options(scipen=0)
 ```
+
+
+```{r}
+mod_ols_1 <- plm(world_df$death_rate ~ world_df$stringency_index,
+                  index = c("location", "date"), data = world_df, model = "pooling")
+
+# world_df %>% 
+#     mutate(year_quarter = paste(year(date), quarter(date), sep = "")) %>% 
+#     relocate(year_quarter, .before = date) %>% 
+#     dummy.code(year_quarter)
+
+add_year_dummy <- function(df){
+    
+    mutate()
+    
+}
+
+# mod_ols_2 <- plm()
+
+mod_ols_3 <- plm(world_df$death_rate ~ world_df$stringency_index + world_df$aged_65_older + world_df$gdp_per_capita + world_df$extreme_poverty + world_df$diabetes_prevalence + world_df$smokers + world_df$handwashing_facilities + world_df$life_expectancy + world_df$human_development_index, data = world_df,
+                  index = c("location", "date"), model = "pooling")
+
+# tidy(mod_ols_2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+
+
+# ; glance(mod_ols_2)
+
+summary(mod_ols_3)
+```
+
+
+
 
 
