@@ -25,7 +25,7 @@ scale_bigs_cumsum <- function(df, big_cols = c("new_tests", "new_vaccinations"))
         ungroup() %>%
         group_by(location) %>%
         mutate(across(big_cols, function(x) cumsum(x),
-                      .names = "{.col}_cum_per_1000")) %>%
+                      .names = "{.col}"), .keep = "unused") %>%
 
 
 
@@ -39,7 +39,8 @@ scale_bigs_scale <- function(df, big_cols = c("new_vaccinations", "new_tests")){
 
     df <- df %>%
         ungroup() %>%
-        mutate(across(big_cols, function(x) scale(x), .names = .col))
+        mutate(across(big_cols, function(x) scale(x), .names = "{.col}_cum_per_1000"),
+               .keep = "unused")
 
 
     return(df)
@@ -76,7 +77,8 @@ scale_bigs_constant <- function(df){
                       function(x) scale(x, center = T), .names = "{.col}_norm"),
                across(c("gdp_per_capita"), function(x) if_else(x == 0, 0, log(x)),
                       .names = "{.col}_log"),
-               across(c("human_development_index"), function(x) x * 100, .names = "{.cols}"))
+               across(c("human_development_index"), function(x) x * 100, .names = "{.col}"),
+               .keep = "unused")
 
     return(df)
 }

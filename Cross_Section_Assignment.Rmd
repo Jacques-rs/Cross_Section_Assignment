@@ -108,7 +108,7 @@ library(pacman)
 
 pacman::p_load(tidyverse, dplyr, lubridate, AER, 
                broom, plm, corrplot, psych, ggrepel,
-               gridExtra)
+               gridExtra, stargazer)
 
 fmxdat::source_all("./code")
 
@@ -123,7 +123,7 @@ fmxdat::source_all("./code")
 
 ```{r View continents}
 
-continents <- extract_continents()
+extract_continents()
 
 ```
 
@@ -183,15 +183,10 @@ continents <- extract_continents()
 ```
 
 
-Want to compare the US, with Europe, Africa (excluding SA), and SA (and maybe Asia, or specifically china)
-
-```{r}
-continents
-```
 
 
 ```{r South Africa}
-rm(continents)
+
 # sa_df <- extract_sa_alt(country = "South Africa")
 # africa_df <- extract_sa(cont = "Africa")
 
@@ -318,12 +313,11 @@ world_df <- extract_all() %>%
 ```
 
 
-#Cumulative Values
+# Cumulative Values
 
-```{r,Check range of variying columns}
+```{r}
 options(scipen=999)
 fmxdat::source_all("./code")
-
 cols_range(world_df)
 options(scipen=0)
 ```
@@ -538,6 +532,32 @@ world_df %>% ungroup() %>% group_by(location) %>%
 ```
 
 
+# Correlation
+
+```{r, fig.width=8}
+
+
+world_df %>% ungroup() %>% select(-c(location, date, new_tests, 
+                                     gdp_per_capita_log, population_density_norm,
+                                     cardiovasc_death_rate_norm,
+                                     reproduction_rate, new_tests_cum_per_1000,
+                                     new_vaccinations_cum_per_1000,
+                                     median_age)) %>%
+    cor(.) %>%
+    corrplot(., method = "color", order = "hclust", tl.srt=0, diag = F,
+             tl.col = "black", addCoef.col = "black",
+             tl.pos = "l",
+             tl.cex = 0.8,
+             number.font = 8)
+
+```
+
+<!-- Might exclude below-->
+
+
+
+# Regressions
+
 ## OLS
 
 ```{r}
@@ -545,15 +565,20 @@ mod_ols_1 <- plm(world_df$afflicted_rate ~ world_df$stringency_index,
                   index = c("location", "date"), data = world_df, model = "pooling")
 summary(mod_ols_1)
 
+stargazer(mod_ols_1)
+
 ```
 
 
 ```{r}
-
+options(scipen=999)
 mod_ols_2 <- plm(afflicted_rate ~ stringency_index + smokers 
-                 + handwashing_facilities + ,
+                 + handwashing_facilities + gdp_per_capita,
                   index = c("location", "date"), data = world_df, model = "pooling")
 
+tidy(mod_ols_2, conf.int = T)
+summary(mod_ols_2)
+options(scipen=0)
 ```
 
 
@@ -578,8 +603,7 @@ world_semester_df <- extract_all() %>%
     feature_adj_all() %>% 
     aggregate_semester() %>% 
     trim_semester() %>% 
-    relocate(death_rate, .before = reproduction_rate) %>% 
-    relocate(afflicted_rate, .before = death_rate)
+    relocate(afflicted_rate, .before = reproduction_rate)
 
 
 ```
@@ -607,16 +631,9 @@ options(scipen=0)
 mod_ols_1_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$stringency_index,
                   index = c("location", "date"), data = world_semester_df, model = "pooling")
 
-# world_semester_df %>% 
-#     mutate(year_quarter = paste(year(date), quarter(date), sep = "")) %>% 
-#     relocate(year_quarter, .before = date) %>% 
-#     dummy.code(year_quarter)
 
-add_year_dummy <- function(df){
-    
-    mutate()
-    
-}
+
+
 
 # mod_ols_2_sem <- plm()
 
@@ -631,22 +648,6 @@ mod_ols_3_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$string
 summary(mod_ols_3_sem)
 ```
 
-# Correlation
 
-```{r, fig.width=8}
-
-
-world_df %>% ungroup() %>% select(-c(location, date, new_tests, 
-                                     gdp_per_capita, population_density,
-                                     median_age)) %>%
-    cor(.) %>%
-    corrplot(., method = "color", order = "hclust", tl.srt=0, diag = F,
-             tl.col = "black", addCoef.col = "black",
-             tl.pos = "l",
-             tl.cex = 0.8,
-             number.font = 8,
-             type = "lower")
-
-```
 
 
