@@ -216,6 +216,12 @@ $if(HardSet_layout)$
 
 $endif$
 
+% code to insert to fix environment Shaded undefined issue with
+% showing code chunks in rticle IEEE template.
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
 
 \begin{document}
 

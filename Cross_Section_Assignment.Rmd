@@ -100,7 +100,7 @@ output:
 <!-- If you want a chunk's code to be printed, set echo = TRUE. message = FALSE stops R printing ugly package loading details in your final paper too. I also suggest setting warning = FALSE and checking for warnings in R, else you might find ugly warnings in your paper. -->
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H')
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H')
 # Note: Include = FALSE implies the code is executed, but not printed in your pdf.
 # warning and message = FALSE implies ugly messages and warnings are removed from your pdf.
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
@@ -108,7 +108,7 @@ library(pacman)
 
 pacman::p_load(tidyverse, dplyr, lubridate, AER, 
                broom, plm, corrplot, psych, ggrepel,
-               gridExtra, stargazer)
+               gridExtra, stargazer, formatR)
 
 fmxdat::source_all("./code")
 
@@ -183,120 +183,12 @@ extract_continents()
 ```
 
 
+First, we import the data and remove unnecessary columns.
+Some transformations are also made to columns to make them more usable for regressio.
+The variables that are distributed on a wider range, or scale, are also
+scaled to ensure that the OLS estimation is not biased by this.
 
-
-```{r South Africa}
-
-# sa_df <- extract_sa_alt(country = "South Africa")
-# africa_df <- extract_sa(cont = "Africa")
-
-
-# sa_df_alt <- extract_sa_alt(country = "South Africa")  
-# africa_df_alt <- extract_sa_alt(cont = "Africa")
-
-
-```
-
-
-```{r }
-
-# Tests seems to have started from the first observation of the
-# dataset so all information might be relevant
-# sa_df %>% 
-#     mutate(test_date = if_else(!is.na(total_cases), sa_df$date, lubridate::ymd(20000101))) %>% 
-#     select(date, test_date) %>% ggplot() +
-#     geom_point(aes(x = date, y = test_date), color = "red",
-#                size = 0.5) #+
-#     #xlim(first(sa_df$date), last(sa_df$date))
-
-
-```
-
-
-[Share of woman vs men](https://www.statista.com/statistics/967928/total-population-of-south-africa-by-gender/) in SA about equal
-
-```{r Additional Features We Do Not Want}
-
-# sa_df <- feature_adj(sa_df)
-# africa_df <- feature_adj(africa_df)
-    
-# sa_df_alt <- feature_adj_alt(sa_df_alt)
-# africa_df_alt <- feature_adj_alt(africa_df_alt)
-
-
-```
-
-
-```{r format for Regression}
-
-fmxdat::source_all("./code")
-
-# sa_df <- regression_format_country(sa_df)
-# africa_df <- regression_format_country(africa_df)
-
-# sa_df_alt <- regression_format_country_alt(sa_df_alt)
-# africa_df_alt <- regression_format_country_alt(africa_df_alt)
-
-
-```
-
-
-
-```{r}
-fmxdat::source_all("./code")
-
-# africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>% 
-#     experiment_trim(.)
-
-```
-
-
-
-
-We need to have a look at the correlation between the different variables
-to see what type of relationships exist. 
-Furthermore, it is important to 
-<!-- determine correlations beyond mere linear correlations. -->
-
-```{r, fig.height=10, fig.width=10}
-
-# africa_df_alt %>% filter()
-# 
-# africa_df_alt %>% ungroup() %>% select(-c(location, date, continent, 
-#                                           day_of_week, smokers, hosp_patients)) %>% 
-#     cor(.) %>% 
-#     corrplot(., method = "pie", order = "hclust", tl.srt=45, diag = F)
-
-```
-
-
-
-```{r}
-# OLS_model1 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index,
-#                   index = c("location", "date"), data = africa_df_alt, model = "pooling")
-# 
-# OLS_model2 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index + africa_df_alt$aged_65_older + africa_df_alt$population_density + africa_df_alt$gdp_per_capita + africa_df_alt$extreme_poverty + africa_df_alt$diabetes_prevalence + africa_df_alt$smokers + africa_df_alt$handwashing_facilities + africa_df_alt$life_expectancy + africa_df_alt$human_development_index, data = africa_df_alt, 
-#                   index = c("location", "date"), model = "pooling")
-# 
-# tidy(OLS_model2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
-# 
-# 
-# # ; glance(OLS_model2)
-# 
-# summary(OLS_model2)
-```
-
-
-```{r}
-fmxdat::source_all("./code")
-
-# sa_df_alt <- sa_df_alt %>%  experiment_aggregate(.) %>% 
-#     experiment_trim(.)
-```
-
-
-
-```{r}
+```{r echo=TRUE}
 fmxdat::source_all("./code")
 # New vaccinations is transformed to new_vaccinations relative to population size
 # i.e. per 1000 people
@@ -310,6 +202,8 @@ world_df <- extract_all() %>%
     experiment_trim() %>% 
     relocate(afflicted_rate, .before = reproduction_rate)
 
+world_df
+
 ```
 
 
@@ -321,6 +215,8 @@ fmxdat::source_all("./code")
 cols_range(world_df)
 options(scipen=0)
 ```
+
+Plotting to see whether there is any irregularity in the distribution of the dependent variable.
 
 ```{r}
 world_df %>% ggplot(aes(fill=location, y = afflicted_rate/206, x = date)) +
@@ -428,18 +324,6 @@ Additional features that need to be scaled are this
 - `cardiovasc_death_rate`
 
 ```{r}
-# first, double check cardiovascular death rate
-
-# constant_features = c("gdp_per_capita", "population_density",
-#                                                            "median_age", "aged_65_older",
-#                                                            "extreme_poverty",
-#                                                       "cardiovasc_death_rate",
-#                                                            "diabetes_prevalence",
-#                                                       "handwashing_facilities",
-#                                                            "hosp_beds_1k", "life_expectancy",
-#                                                            "human_development_index", "smokers")
-
-# world_df %>% ungroup() %>% gather("location", constants, vars(c("location", constant_features)))
 
 g1 <- world_df %>% ungroup() %>% group_by(location) %>% 
     filter(date == last(date)) %>% 
@@ -534,10 +418,10 @@ world_df %>% ungroup() %>% group_by(location) %>%
 
 # Correlation
 
-```{r, fig.width=8}
+```{r, fig.width=7}
 
 
-world_df %>% ungroup() %>% select(-c(location, date, new_tests, 
+world_df %>% ungroup() %>% select(-c(location, date, 
                                      gdp_per_capita_log, population_density_norm,
                                      cardiovasc_death_rate_norm,
                                      reproduction_rate, new_tests_cum_per_1000,
@@ -552,7 +436,6 @@ world_df %>% ungroup() %>% select(-c(location, date, new_tests,
 
 ```
 
-<!-- Might exclude below-->
 
 
 
@@ -561,92 +444,94 @@ world_df %>% ungroup() %>% select(-c(location, date, new_tests,
 ## OLS
 
 ```{r}
-mod_ols_1 <- plm(world_df$afflicted_rate ~ world_df$stringency_index,
-                  index = c("location", "date"), data = world_df, model = "pooling")
-summary(mod_ols_1)
+mod_ols_1 <- plm(afflicted_rate ~ stringency_index +
+                 handwashing_facilities,
+                  index = c("location", "date"), data = world_df, 
+                 model = "pooling")
 
-stargazer(mod_ols_1)
-
-```
-
-
-```{r}
-options(scipen=999)
 mod_ols_2 <- plm(afflicted_rate ~ stringency_index + smokers 
-                 + handwashing_facilities + gdp_per_capita,
-                  index = c("location", "date"), data = world_df, model = "pooling")
+                 + handwashing_facilities + gdp_per_capita_log +
+                 diabetes_prevalence,
+                  index = c("location", "date"), data = world_df, 
+                 model = "pooling")
 
-tidy(mod_ols_2, conf.int = T)
-summary(mod_ols_2)
-options(scipen=0)
+mod_ols_3 <- plm(afflicted_rate ~ stringency_index + smokers
+                 + handwashing_facilities + gdp_per_capita_log
+                 + aged_65_older + extreme_poverty + diabetes_prevalence 
+                 + life_expectancy, 
+                 data = world_df, 
+                 index = c("location", "date"), model = "pooling")
+
+robustse_ols1 <- sqrt(diag(vcovHC(mod_ols_1, type = "HC1")))
+robustse_ols2 <- sqrt(diag(vcovHC(mod_ols_2, type = "HC1")))
+robustse_ols3 <- sqrt(diag(vcovHC(mod_ols_3, type = "HC1")))
+
 ```
 
+
+```{r, results='asis', message=F, comment='%', tidy=T}
+
+stargazer(mod_ols_1, mod_ols_2, mod_ols_3, header = F,
+          font.size = "footnotesize", se = list(robustse_ols1,
+                                     robustse_ols2,
+                                     robustse_ols3))
+
+```
+
+
+## Fixed Effects
 
 
 ```{r}
-mod_ols_3 <- plm(world_df$afflicted_rate ~ world_df$stringency_index + world_df$aged_65_older + world_df$gdp_per_capita + world_df$extreme_poverty + world_df$diabetes_prevalence + world_df$smokers + world_df$handwashing_facilities + world_df$life_expectancy + world_df$human_development_index, data = world_df,
-                  index = c("location", "date"), model = "pooling")
 
-# tidy(mod_ols_2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+mod_fe_1 <- plm(afflicted_rate ~ stringency_index + smokers
+                 + handwashing_facilities + gdp_per_capita_log
+                 + aged_65_older + extreme_poverty + diabetes_prevalence 
+                 + life_expectancy + human_development_index, 
+                 data = world_df, 
+                 index = c("location"), 
+                model = "within", effect = "individual")
 
 
-# ; glance(mod_ols_2)
-
-
-```
-
-# Semester
-
-```{r}
-fmxdat::source_all("./code")
-world_semester_df <- extract_all() %>% 
-    feature_adj_all() %>% 
-    aggregate_semester() %>% 
-    trim_semester() %>% 
-    relocate(afflicted_rate, .before = reproduction_rate)
-
+robustse_fe1 <- sqrt(diag(vcovHC(mod_fe_1, type = "HC1")))
 
 ```
 
 
-```{r}
-world_semester_df <- world_semester_df %>% scale_bigs_cumsum(.)
+
+```{r, results='asis', message=F, comment='%', tidy=T}
+stargazer(mod_fe_1, header = F,
+          font.size = "small", se = list(robustse_fe1))
 ```
 
+
+## Random Effects
 
 
 ```{r}
-world_semester_df <- world_semester_df %>% scale_bigs_constant(.)
+mod_re_1 <- plm(afflicted_rate ~ stringency_index + smokers
+                 + handwashing_facilities + gdp_per_capita_log
+                 + aged_65_older + extreme_poverty + diabetes_prevalence 
+                 + life_expectancy + human_development_index 
+                + reproduction_rate, 
+                 data = world_df, 
+                 index = c("location"),
+                model = "random")
+
+
+robustse_re1 <- sqrt(diag(vcovHC(mod_re_1, type = "HC1")))
 ```
 
 
-```{r}
-options(scipen=999)
-world_semester_df %>% cols_range(df = ., constant_features = c("location", "date"))
-options(scipen=0)
+```{r, results='asis', message=F, comment='%', tidy=T}
+stargazer(mod_re_1, header = F,
+          font.size = "small", se = list(robustse_re1))
 ```
 
-
-```{r}
-mod_ols_1_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$stringency_index,
-                  index = c("location", "date"), data = world_semester_df, model = "pooling")
-
-
-
-
-
-# mod_ols_2_sem <- plm()
-
-mod_ols_3_sem <- plm(world_semester_df$afflicted_rate ~ world_semester_df$stringency_index + world_semester_df$aged_65_older + world_semester_df$gdp_per_capita + world_semester_df$extreme_poverty + world_semester_df$diabetes_prevalence + world_semester_df$smokers + world_semester_df$handwashing_facilities + world_semester_df$life_expectancy + world_semester_df$human_development_index, data = world_semester_df,
-                  index = c("location", "date"), model = "pooling")
-
-# tidy(mod_ols_2_sem) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
-
-
-# ; glance(mod_ols_2_sem)
-
-summary(mod_ols_3_sem)
-```
+It is important to note that with a lot of Covid data, the reliability of measurement error 
+and false estimates is questionable. The fixed, and random effects might exacerbate this problem.
+In this case, it seems that OLS pooled regression, might perform better in explaining the behaviour 
+in the defined 'afflicted_rate' variable.
 
 
 
