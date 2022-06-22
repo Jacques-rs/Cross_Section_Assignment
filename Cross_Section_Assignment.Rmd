@@ -106,7 +106,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
 library(pacman)
 
-pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm, corrplot)
+pacman::p_load(tidyverse, dplyr, lubridate, AER, broom, plm, corrplot, psych)
 
 fmxdat::source_all("./code")
 
@@ -136,7 +136,10 @@ number_countries <- read_csv(file = "./data/owid-covid-data.csv",
     filter(date == first(date)) %>% 
     select(location) %>% 
     nrow()
+```
 
+
+```{r}
 quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
                           show_col_types = F) %>% 
     group_by(location) %>% 
@@ -147,8 +150,10 @@ quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
     
 
 quick_check2
+```
 
 
+```{r}
 number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
                           show_col_types = F) %>% 
     group_by(location) %>% 
@@ -158,7 +163,10 @@ number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
     filter(date <= lubridate::ymd(20200430)) %>% 
     select(location) %>% 
     unique()
+```
 
+
+```{r}
 read_csv(file = "./data/owid-covid-data.csv",
                           show_col_types = F) %>% 
     group_by(location) %>% 
@@ -185,20 +193,19 @@ rm(continents)
 # sa_df <- extract_sa_alt(country = "South Africa")
 # africa_df <- extract_sa(cont = "Africa")
 
-range(sa_df[,"human_development_index"])
+# range(sa_df[,"human_development_index"])
 
-select(names(sa_df))
+# select(names(sa_df))
 
-is_constant_feature(df){
-    
-    if(max() == min()){TRUE}else{FALSE}
-    
-}
+# is_constant_feature(df){
+#     
+#     if(max() == min()){TRUE}else{FALSE}
+#     
+# }
 
-range()
 
-sa_df_alt <- extract_sa_alt(country = "South Africa")  
-africa_df_alt <- extract_sa_alt(cont = "Africa")
+# sa_df_alt <- extract_sa_alt(country = "South Africa")  
+# africa_df_alt <- extract_sa_alt(cont = "Africa")
 
 
 ```
@@ -226,8 +233,8 @@ africa_df_alt <- extract_sa_alt(cont = "Africa")
 # sa_df <- feature_adj(sa_df)
 # africa_df <- feature_adj(africa_df)
     
-sa_df_alt <- feature_adj_alt(sa_df_alt)
-africa_df_alt <- feature_adj_alt(africa_df_alt)
+# sa_df_alt <- feature_adj_alt(sa_df_alt)
+# africa_df_alt <- feature_adj_alt(africa_df_alt)
 
 
 ```
@@ -240,8 +247,8 @@ fmxdat::source_all("./code")
 # sa_df <- regression_format_country(sa_df)
 # africa_df <- regression_format_country(africa_df)
 
-sa_df_alt <- regression_format_country_alt(sa_df_alt)
-africa_df_alt <- regression_format_country_alt(africa_df_alt)
+# sa_df_alt <- regression_format_country_alt(sa_df_alt)
+# africa_df_alt <- regression_format_country_alt(africa_df_alt)
 
 
 ```
@@ -262,8 +269,8 @@ the time period we have.
 ```{r}
 
 # WE want regress 
-africa_df_alt %>% filter(day_of_week == "Sun") %>% ggplot() +
-    geom_line(aes(x = date, y = excess_mortality))
+# africa_df_alt %>% filter(day_of_week == "Sun") %>% ggplot() +
+#     geom_line(aes(x = date, y = excess_mortality))
 
 ```
 
@@ -271,8 +278,8 @@ africa_df_alt %>% filter(day_of_week == "Sun") %>% ggplot() +
 ```{r}
 fmxdat::source_all("./code")
 
-africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>% 
-    experiment_trim(.)
+# africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>% 
+#     experiment_trim(.)
 
 ```
 
@@ -280,22 +287,13 @@ africa_df_alt <- africa_df_alt %>%  experiment_aggregate(.) %>%
 Checking the plots of all the features:
 
 ```{r}
-africa_df_alt %>% gather(., )
+# africa_df_alt %>% gather(., )
 
 
 
 ```
 
 
-we have to rescale the variables else the effect will never be detected in
-some cases
-
-
-```{r Scaling}
-
-
-
-```
 
 
 We need to have a look at the correlation between the different variables
@@ -305,52 +303,138 @@ Furthermore, it is important to
 
 ```{r, fig.height=10, fig.width=10}
 
-africa_df_alt %>% filter()
-
-africa_df_alt %>% ungroup() %>% select(-c(location, date, continent, 
-                                          day_of_week, smokers, hosp_patients)) %>% 
-    cor(.) %>% 
-    corrplot(., method = "pie", order = "hclust", tl.srt=45, diag = F)
+# africa_df_alt %>% filter()
+# 
+# africa_df_alt %>% ungroup() %>% select(-c(location, date, continent, 
+#                                           day_of_week, smokers, hosp_patients)) %>% 
+#     cor(.) %>% 
+#     corrplot(., method = "pie", order = "hclust", tl.srt=45, diag = F)
 
 ```
 
 
 
 ```{r}
-OLS_model1 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index,
-                  index = c("location", "date"), data = africa_df_alt, model = "pooling")
-
-OLS_model2 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index + africa_df_alt$aged_65_older + africa_df_alt$population_density + africa_df_alt$gdp_per_capita + africa_df_alt$extreme_poverty + africa_df_alt$diabetes_prevalence + africa_df_alt$smokers + africa_df_alt$handwashing_facilities + africa_df_alt$life_expectancy + africa_df_alt$human_development_index, data = africa_df_alt, 
-                  index = c("location", "date"), model = "pooling")
-
-tidy(OLS_model2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
-
-
-# ; glance(OLS_model2)
-
-summary(OLS_model2)
+# OLS_model1 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index,
+#                   index = c("location", "date"), data = africa_df_alt, model = "pooling")
+# 
+# OLS_model2 <- plm(africa_df_alt$death_rate ~ africa_df_alt$stringency_index + africa_df_alt$aged_65_older + africa_df_alt$population_density + africa_df_alt$gdp_per_capita + africa_df_alt$extreme_poverty + africa_df_alt$diabetes_prevalence + africa_df_alt$smokers + africa_df_alt$handwashing_facilities + africa_df_alt$life_expectancy + africa_df_alt$human_development_index, data = africa_df_alt, 
+#                   index = c("location", "date"), model = "pooling")
+# 
+# tidy(OLS_model2) %>% mutate(across(names(.[2:5]), function(x) round(x = x, digits = 3)))
+# 
+# 
+# # ; glance(OLS_model2)
+# 
+# summary(OLS_model2)
 ```
 
 
 ```{r}
 fmxdat::source_all("./code")
 
-sa_df_alt <- sa_df_alt %>%  experiment_aggregate(.) %>% 
-    experiment_trim(.)
+# sa_df_alt <- sa_df_alt %>%  experiment_aggregate(.) %>% 
+#     experiment_trim(.)
 ```
 
 
 ```{r}
-
-OLS_model_exp <- plm(sa_df_alt$death_rate ~ sa_df_alt$stringency_index + sa_df_alt$aged_65_older + sa_df_alt$population_density + sa_df_alt$gdp_per_capita + sa_df_alt$extreme_poverty + sa_df_alt$diabetes_prevalence + sa_df_alt$smokers + sa_df_alt$handwashing_facilities + sa_df_alt$life_expectancy + sa_df_alt$human_development_index, data = sa_df_alt, 
-                  index = c("location", "date"), model = "pooling")
-
-tidy(OLS_model_exp); glance(OLS_model_exp)
-
-summary(OLS_model_exp)
+# 
+# OLS_model_exp <- plm(sa_df_alt$death_rate ~ sa_df_alt$stringency_index + sa_df_alt$aged_65_older + sa_df_alt$population_density + sa_df_alt$gdp_per_capita + sa_df_alt$extreme_poverty + sa_df_alt$diabetes_prevalence + sa_df_alt$smokers + sa_df_alt$handwashing_facilities + sa_df_alt$life_expectancy + sa_df_alt$human_development_index, data = sa_df_alt, 
+#                   index = c("location", "date"), model = "pooling")
+# 
+# tidy(OLS_model_exp); glance(OLS_model_exp)
+# 
+# summary(OLS_model_exp)
 
 ```
 
 
+
+```{r}
+fmxdat::source_all("./code")
+world_df <- extract_all() %>% 
+    feature_adj_all() %>% 
+    experiment_aggregate_week() %>% 
+    experiment_trim() %>% 
+    relocate(death_rate, .before = reproduction_rate)
+
+```
+
+
+
+```{r}
+read_csv(file = "./data/owid-covid-data.csv",
+         show_col_types = F) %>% select(reproduction_rate) %>% 
+    replace(is.na(.), 0) %>% 
+    range()
+```
+
+
+```{r,Check range of variying columns}
+options(scipen=999)
+fmxdat::source_all("./code")
+
+cols_range(world_df)
+options(scipen=0)
+```
+
+Thus, want to scale: `icu_patients, hosp_patients, new_test, new_vaccinations`
+
+```{r}
+
+fmxdat::source_all("./code")
+
+world_df <- world_df %>% scale_bigs(world_df)
+
+
+```
+
+Now, to check the scales of the features that remain constant per country:
+
+```{r}
+
+cols_range_constant(world_df)
+
+```
+
+Additional features that need to be scaled are this
+
+- `gdp_per_capita`
+- `population_density`
+- `cardiovasc_death_rate`
+
+```{r}
+# first, double check cardiovascular death rate
+
+world_df %>% ungroup() %>% group_by(location) %>% 
+    filter(date == last(date)) %>% 
+    ggplot() +
+    geom_point(aes(x = location, y = cardiovasc_death_rate)) +
+    theme(axis.text.x = element_blank(),
+      axis.title = element_text(face = "bold"),
+      axis.line = element_line(colour = "grey50", size = 1)) +
+    scale_y_continuous("Cardiovascular Death Rate") +
+    labs(title = "Plot of Distribution of Cardiovascular Death Rate per Country")
+```
+
+
+
+
+```{r}
+
+world <- world_df %>% scale_bigs_constant()
+    
+
+```
+
+
+Now we can check all the descriptive stats for all the columns
+
+```{r}
+options(scipen=999)
+world_df %>% ungroup() %>% select(-c(location, date)) %>% describe()
+options(scipen=0)
+```
 
 

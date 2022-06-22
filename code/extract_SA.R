@@ -158,6 +158,8 @@ extract_all <- function(path = "./data/owid-covid-data.csv"){
         # Remove the extra features as mentioned above `names1`
         .[, !grepl(names(.), pattern = paste(names1, collapse = "|"))]
 
+    return(df)
+
 }
 
 feature_adj_all <- function(df){

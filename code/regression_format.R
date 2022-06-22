@@ -65,45 +65,46 @@ experiment_aggregate_week <- function(df){
         # relocate(one_day, .after = excess_mortality) %>%
         # group_by(location, year_week) %>%
         mutate(across(-c(constant_features, mean_cols, date), sum),
-               across(mean_cols, mean))
+               across(c(mean_cols), function(x) mean(x))) %>%
+        ungroup()
 
+    return(df)
 
 }
 
 
 
 
-experiment_aggregate <- function(df){
-
-    change <- c()
-
-
-
-    df <- df %>%
-        # select(-c("death_rate")) %>%
-        # need to create a col that indicates which quarter of which year it is
-        mutate(year_quarter = paste(year(date), quarter(date), sep = "-")) %>%
-        # Then I need to groupby this new Quarter_Year variable to aggreagte the
-        # df by this metrics
-        group_by(location) %>%
-        # take care of the fact that certain features are only recorded on a weekly basis
-        fill() %>%
-        group_by(location, year_quarter) %>%
-        # Calculate the average values for those metrics that we need average values for
-        mutate(across(names(df[, grepl(x = names(df), pattern = "new.+")]), sum),
-               across(c("stringency_index", "excess_mortality"), mean)) #%>%
-        # # We might want to calculate the avg change in the variables to
-        # # make the regression estimates more accurate
-        # mutate(across())
-
-        return(df)
-}
+# experiment_aggregate <- function(df){
+#
+#     change <- c()
+#
+#
+#
+#     df <- df %>%
+#         # select(-c("death_rate")) %>%
+#         # need to create a col that indicates which quarter of which year it is
+#         mutate(year_quarter = paste(year(date), quarter(date), sep = "-")) %>%
+#         # Then I need to groupby this new Quarter_Year variable to aggreagte the
+#         # df by this metrics
+#         group_by(location) %>%
+#         # take care of the fact that certain features are only recorded on a weekly basis
+#         fill() %>%
+#         group_by(location, year_quarter) %>%
+#         # Calculate the average values for those metrics that we need average values for
+#         mutate(across(names(df[, grepl(x = names(df), pattern = "new.+")]), sum),
+#                across(c("stringency_index", "excess_mortality"), mean)) #%>%
+#         # # We might want to calculate the avg change in the variables to
+#         # # make the regression estimates more accurate
+#         # mutate(across())
+#
+#         return(df)
+# }
 
 
 experiment_trim <- function(df){
 
     df <- df %>%
-        mutate(year_quarter = lubridate::yq(year_quarter)) %>%
         group_by(location, year_quarter) %>%
         # filter(last(year_quarter)) %>%
         filter(row_number() == n()) %>%
@@ -112,7 +113,7 @@ experiment_trim <- function(df){
         select(-c(year_quarter)) %>%
         group_by(location, date) %>%
         mutate(death_rate = (new_deaths/new_cases)*100, .keep = "unused") %>%
-        replace(is.na(.), 0) %>%
+        replace(is.na(.), 0)
 
         return(df)
 
