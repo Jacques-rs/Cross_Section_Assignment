@@ -49,7 +49,7 @@ Email1: "gerardrossouw\\@gmail.com" # First Author's Email address
 #TopLHeader: \leftmark # Adds section name at topleft. Remove comment to add it.
 BottomRFooter: "\\footnotesize Page \\thepage" # Add a '#' before this line to remove footer.
 addtoprule: TRUE
-addfootrule: TRUE               # Use if footers added. Add '#' to remove line.
+addfootrule: TRUE # Use if footers added. Add '#' to remove line.
 
 # --------- page margins:
 margin: 2.3 # Sides
@@ -75,10 +75,10 @@ csl: Tex/harvard-stellenbosch-university.csl # referencing format used.
 # ---------- General:
 RemovePreprintSubmittedTo: TRUE  # Removes the 'preprint submitted to...' at bottom of titlepage
 # Journal: "Journal of Finance"   # Journal that the paper will be submitting to, if RemovePreprintSubmittedTo is set to TRUE.
-toc: FALSE                       # Add a table of contents
+toc: TRUE         # Add a table of contents
 numbersections: TRUE             # Should sections (and thus figures and tables) be numbered?
-fontsize: 11pt                  # Set fontsize
-linestretch: 1.2                # Set distance between lines.
+fontsize: 11pt    # Set fontsize
+linestretch: 1.2  # Set distance between lines.
 link-citations: TRUE            # This creates dynamic links to the papers in reference list.
 
 ### Adding additional latex packages:
@@ -91,24 +91,18 @@ output:
     template: Tex/TexDefault.txt
     fig_width: 3.5 # Adjust default figure sizes. This can also be done in the chunks of the text.
     fig_height: 3.5
-# abstract: |
-#   Abstract to be written here. The abstract should not be too long and should provide the reader with a good understanding what you are writing about. Academic papers are not like novels where you keep the reader in suspense. To be effective in getting others to read your paper, be as open and concise about your findings here as possible. Ideally, upon reading your abstract, the reader should feel he / she must read your paper in entirety.
 ---
 
-<!-- First: Set your default preferences for chunk options: -->
-
-<!-- If you want a chunk's code to be printed, set echo = TRUE. message = FALSE stops R printing ugly package loading details in your final paper too. I also suggest setting warning = FALSE and checking for warnings in R, else you might find ugly warnings in your paper. -->
+<!-- First: default preferences for chunk options: -->
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H')
-# Note: Include = FALSE implies the code is executed, but not printed in your pdf.
-# warning and message = FALSE implies ugly messages and warnings are removed from your pdf.
-# These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
-library(pacman)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+        fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H',
+        purl = TRUE)
 
 pacman::p_load(tidyverse, dplyr, lubridate, AER, 
-               broom, plm, corrplot, psych, ggrepel,
-               gridExtra, stargazer, formatR)
+ broom, plm, corrplot, psych, ggrepel,
+ gridExtra, stargazer, formatR)
 
 fmxdat::source_all("./code")
 
@@ -120,82 +114,52 @@ fmxdat::source_all("./code")
 <!-- ############################## -->
 
 
+\newpage
 
-```{r View continents}
-
-extract_continents()
-
-```
+# Introduction
 
 
+The effects of the covid-19 corona virus has led to global economic strain and
+the debate over whether strict lockdown rules were necessary inspite of their 
+economic implications is debated by some. 
 
-```{r}
+The problem with identifying the effect that covid policy stringency had on
+covid-19 is with the idiosynctratic differences between countries that also 
+contributed to the severity of how covid would have affected individuals. 
+This suggests that the fixed effects regression technique offers a unique 
+opportunity to account for these fixed effects between countries, and to isolate
+the effect that policy had on covid. Towards fighting the coronavirus as 
+a different flu from the typical cold, the amount of people hospitalised, 
+those ending up in ICU, or deaths per unit of time is measured relative to 
+the amount of new cases. The typical flu also spreads rapidly but the the
+problem is set up as mentioned, to isolate the effect over and above being
+a standard flu.
 
+By using the data from @dataset, the data is first cleaned by filtering for 
+only the country components, and removing the countries for which data does 
+not exist after a certain date.
 
-# number_countries <- read_csv(file = "./data/owid-covid-data.csv",
-#                           show_col_types = F) %>%
-#     filter(!location %in% c(continents)) %>%
-#     filter(date == first(date)) %>% 
-#     select(location) %>% 
-#     nrow()
-```
-
-
-```{r}
-# quick_check2 <-  read_csv(file = "./data/owid-covid-data.csv",
-#                           show_col_types = F) %>% 
-#     group_by(location) %>% 
-#     filter(date == first(date)) %>% 
-#     ggplot() + 
-#     geom_point(aes(x = location, y = date)) +
-#     geom_hline(yintercept = lubridate::ymd(20200430), color = "red")
-#     
-# 
-# quick_check2
-```
+<!-- Note: All functional code is contained in the appendix -->
 
 
-```{r}
-# number_countries_incl <- read_csv(file = "./data/owid-covid-data.csv",
-#                           show_col_types = F) %>% 
-#     group_by(location) %>% 
-#     filter(!location %in% c(continents)) %>% 
-#     filter(date == first(date)) %>% 
-#     filter(!is.na(continent)) %>% 
-#     filter(date <= lubridate::ymd(20200430)) %>% 
-#     select(location) %>% 
-#     unique()
-```
+# Data Cleaning/Feature Selection
 
+```{r View continents, appendix = T, include=FALSE}
 
-```{r}
-# read_csv(file = "./data/owid-covid-data.csv",
-#                           show_col_types = F) %>% 
-#     group_by(location) %>% 
-#     filter(!location %in% c(continents)) %>% 
-#     filter(!is.na(continent)) %>% 
-#     filter(first(date) <= lubridate::ymd(20200430)) %>% 
-#     filter(date == first(date)) %>% 
-#     select(location)
-
-
+# Checking the date of first observations
+start_date()
 
 ```
 
 
-First, we import the data and remove unnecessary columns.
-Some transformations are also made to columns to make them more usable for regressio.
-The variables that are distributed on a wider range, or scale, are also
-scaled to ensure that the OLS estimation is not biased by this.
+Some transformations are also made to columns to make them more usable for 
+regression. The variables that are distributed on a wider range, or scale, 
+are also scaled to ensure that the OLS estimation is not biased by this. The
+code in the [Appendix] illustrates this.
 
-```{r echo=TRUE}
-fmxdat::source_all("./code")
-# New vaccinations is transformed to new_vaccinations relative to population size
-# i.e. per 1000 people
-# Same goes for new_tests
-# hosp_paitents, per 1000000
-# as well as icu
+```{r Fetch, echo=FALSE, include=FALSE, purl=TRUE}
 
+# fetching and cleaning the dataset
 world_df <- extract_all() %>% 
     feature_adj_all() %>% 
     experiment_aggregate_week() %>% 
@@ -203,294 +167,196 @@ world_df <- extract_all() %>%
     relocate(afflicted_rate, .before = reproduction_rate)
 
 world_df
-
 ```
 
 
-# Cumulative Values
-
-```{r}
-options(scipen=999)
-fmxdat::source_all("./code")
-cols_range(world_df)
-options(scipen=0)
-```
-
-Plotting to see whether there is any irregularity in the distribution of the dependent variable.
-
-```{r}
-world_df %>% ggplot(aes(fill=location, y = afflicted_rate/206, x = date)) +
-    geom_area(position = "stack", stat = "identity", alpha = 0.5) +
-    theme(legend.position="none") 
-```
+## Converting to Cumulative Values
 
 
-
-
-```{r}
-
-fmxdat::source_all("./code")
-
+```{r echo=TRUE}
+# See appendix
 world_df <- world_df %>% scale_bigs_cumsum(.)
-
-
 ```
 
+## Variable Features Scaling
 
-# Scaling
-
-
-```{r,Check range of variying columns}
+```{r range_var, echo=FALSE}
 options(scipen=999)
-fmxdat::source_all("./code")
-
 cols_range(world_df)
 options(scipen=0)
 ```
-
 
 Thus, want to scale: `new_test, new_vaccinations`
 
+Plotting to see whether there is any irregularity in the distribution of the dependent variable.
 
-```{r}
-
-
-
-# world_df %>% gather(big, big_cols,
-#                     c("icu_patients", "hosp_patients",
-#                       "new_tests", "new_vaccinations")) %>%
-#     ggplot()
-
-
-
-world_df %>% ungroup() %>% group_by(location) %>% 
-    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
-    # filter(date == last(date)) %>% 
-    ggplot(aes(x = date, y = new_tests, group = location, col = location)) +
-    geom_line() +
-    theme(axis.text.x = element_text(size = 10),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("cumulative_new_tests_per_1000") +
-    labs(title = "Plot name") +
-    geom_label_repel(aes(label = label),
-              nudge_x = 1,
-              na.rm = TRUE) +
-    theme(legend.position="none")
-
-
+```{r afflicted, echo=FALSE}
+afflicted_plot(world_df)
 ```
 
 
-```{r}
-world_df %>% ungroup() %>% group_by(location) %>% 
-    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
-    # filter(date == last(date)) %>% 
-    ggplot(aes(x = date, y = new_vaccinations, group = location, col = location)) +
-    geom_line() +
-    theme(axis.text.x = element_text(size = 10),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("cumulative_new_vaccinations_per_1000") +
-    labs(title = "Plot name") +
-    geom_label_repel(aes(label = label),
-              nudge_x = 1,
-              na.rm = TRUE) +
-    theme(legend.position="none")
+```{r var_plot, echo=FALSE}
+p1 <- cumulative_test_plot(world_df)
+p2 <- cumulative_vax_plot(world_df)
+grid.arrange(p1, p2, ncol=2)
 ```
 
 
-
-
-```{r}
-world_df <- world_df %>% scale_bigs_scale()
+```{r scale_var, echo=TRUE}
+world_df <- world_df %>% scale_bigs_scale(.)
 ```
 
 
-## Country specific feature scaling
+## Fixed Effects Feature Scaling
 
 Now, to check the scales of the features that remain constant per country:
 
-```{r}
-
+```{r range_cons, echo=FALSE}
 cols_range_constant(world_df)
-
 ```
 
 Additional features that need to be scaled are this
-
 - `gdp_per_capita`
 - `population_density`
 - `cardiovasc_death_rate`
 
-```{r}
+```{r cons_plot, echo=FALSE}
 
-g1 <- world_df %>% ungroup() %>% group_by(location) %>% 
-    filter(date == last(date)) %>% 
-    ggplot() +
-    geom_point(aes(x = reorder(location, cardiovasc_death_rate, mean), y = cardiovasc_death_rate)) +
-    theme(axis.text.x = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("Cardiovascular Death Rate") +
-    scale_x_discrete("Country") +
-    labs(title = "Cardiovascular Death Rate")
-         # subtitle = "More or less linear i.e. normalisation scaling")
-
-```
-
-
-
-
-```{r}
-g2 <- world_df %>% ungroup() %>% group_by(location) %>% 
-    filter(date == last(date)) %>% 
-    ggplot() +
-    geom_point(aes(x = reorder(location, gdp_per_capita, mean), y = gdp_per_capita)) +
-    theme(axis.text.x = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("GDP per Capita") +
-        scale_x_discrete("Country") +
-    labs(title = "GDP per capita")
-         # subtitle = "Nonlinear distribution suggests a\nlog transformation")
-
-```
-
-```{r}
-g3 <- world_df %>% ungroup() %>% group_by(location) %>% 
-    filter(date == last(date)) %>% 
-    ggplot() +
-    geom_point(aes(x = reorder(location, population_density, mean), y = population_density)) +
-    theme(axis.text.x = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("Population Density") +
-    scale_x_discrete("Country") +
-    labs(title = "Population Density")
-         # subtitle = "Presence of outliers suggests scaling\nsuch that outliers remain\nrelatively present, i.e. normalisation")
-```
-
-### Plot
-
-```{r}
-
+g1 <- cardio_plot(world_df)
+g2 <- gdp_plot(world_df)
+g3 <- pop_density_plot(world_df)
 grid.arrange(g1, g2, g3, nrow=2)
-
 ```
 
 
-
-```{r}
-
+```{r scale_cons, echo=TRUE}
 world_df <- world_df %>% scale_bigs_constant(.)
-    
-
 ```
 
 
 Now we can check all the descriptive stats for all the columns
-
-```{r}
+```{r descr, echo=FALSE}
 options(scipen=999)
 world_df %>% cols_range(df = ., constant_features = c("location", "date"))
 options(scipen=0)
 ```
 
+The value of the stringency index is assumed to have a delayed effect on the 
+coronavirus, therefore, to account for this, one quarter lagged average 
+stringency index value is associated the current with each current period. 
 
-```{r}
-world_df %>% ungroup() %>% group_by(location) %>% 
-    mutate(label = if_else(date == last(date), as.character(location), NA_character_)) %>% 
-    # filter(date == last(date)) %>% 
-    ggplot(aes(x = date, y = afflicted_rate, group = location, col = location)) +
-    geom_line() +
-    theme(axis.text.x = element_text(size = 10),
-      axis.title = element_text(face = "bold"),
-      axis.line = element_line(colour = "grey50", size = 1)) +
-    scale_y_continuous("") +
-    labs(title = "") +
-    geom_label_repel(aes(label = label),
-              nudge_x = 1,
-              na.rm = TRUE) +
-    theme(legend.position="none")
-```
+```{r lag}
+world_df <- world_df %>%
+    group_by(location) %>%
+    mutate(across(date, function(x) floor_date(x, unit = "quarters"))) %>% 
+    ungroup()
+    
+quick_df <- world_df %>%
+    select(location, date, stringency_index) %>% 
+    group_by(location) %>% 
+    mutate(across(date, function(x) x %m+% months(3))) %>% 
+    filter(date != last(date))
 
-
-# Correlation
-
-```{r, fig.width=7}
-
-
-world_df %>% ungroup() %>% select(-c(location, date, 
-                                     gdp_per_capita_log, population_density_norm,
-                                     cardiovasc_death_rate_norm,
-                                     reproduction_rate, new_tests_cum_per_1000,
-                                     new_vaccinations_cum_per_1000,
-                                     median_age)) %>%
-    cor(.) %>%
-    corrplot(., method = "color", order = "hclust", tl.srt=0, diag = F,
-             tl.col = "black", addCoef.col = "black",
-             tl.pos = "l",
-             tl.cex = 0.8,
-             number.font = 8)
-
+world_df <- quick_df %>% left_join(world_df, by = c("location", "date")) %>% 
+    select(-stringency_index.y)
 ```
 
 
 
+# Correlation Analysis
+
+
+```{r cor_plot, echo=FALSE}
+cor_plot1(world_df)$arg$type
+```
+
+```{r core_plot2, echo=FALSE, message=FALSE, warning=FALSE}
+cor_plot2(world_df)$arg$type
+```
+
+
+
+```{r include=FALSE}
+names(world_df)
+```
+
+The components that will form a part of the larger OLS regression is therefore
+the
+- stringency index `stringency_index.x`
+
+- average life expectancy `life_expectancy`
+
+- development index `human_development_index`
+
+- proportion of smokers `smokers`
+
+- population over the age of 65 `aged_65_older`
+
+- and hospital beds per 1000 `hosp_beds_1k`
+
+- Availability of hand washing facilities `handwashing_facilities`
+
+
+Hand washing facilities is added based on intuitive interpretation
 
 # Regressions
 
-## OLS
+## OLS Regression
 
-```{r}
-mod_ols_1 <- plm(afflicted_rate ~ stringency_index +
-                 handwashing_facilities,
-                  index = c("location", "date"), data = world_df, 
-                 model = "pooling")
+```{r OLS}
+mod_ols_1 <- plm(afflicted_rate ~ stringency_index.x +
+   handwashing_facilities,
+    index = c("location", "date"), data = world_df, 
+   model = "pooling")
 
-mod_ols_2 <- plm(afflicted_rate ~ stringency_index + smokers 
-                 + handwashing_facilities + gdp_per_capita_log +
-                 diabetes_prevalence,
-                  index = c("location", "date"), data = world_df, 
-                 model = "pooling")
+mod_ols_2 <- plm(afflicted_rate ~ stringency_index.x + smokers
+   + handwashing_facilities + aged_65_older + diabetes_prevalence 
+   + life_expectancy + human_development_index + hosp_beds_1k, 
+   data = world_df, 
+   index = c("location", "date"), model = "pooling")
 
-mod_ols_3 <- plm(afflicted_rate ~ stringency_index + smokers
-                 + handwashing_facilities + gdp_per_capita_log
-                 + aged_65_older + extreme_poverty + diabetes_prevalence 
-                 + life_expectancy, 
-                 data = world_df, 
-                 index = c("location", "date"), model = "pooling")
+mod_1sls <- plm(stringency_index.x ~ reproduction_rate 
+                + new_vaccinations_cum_per_1000,
+                data = world_df, 
+                index = c("location", "date"), model = "pooling")
 
+stringency_hat <- fitted.values(mod_1sls)
+
+mod_2sls <- plm(afflicted_rate ~ stringency_hat + smokers
+   + handwashing_facilities + aged_65_older + diabetes_prevalence 
+   + life_expectancy + human_development_index + hosp_beds_1k, 
+   data = world_df, 
+   index = c("location", "date"), model = "pooling")
+
+# To get robust standard errors
 robustse_ols1 <- sqrt(diag(vcovHC(mod_ols_1, type = "HC1")))
 robustse_ols2 <- sqrt(diag(vcovHC(mod_ols_2, type = "HC1")))
-robustse_ols3 <- sqrt(diag(vcovHC(mod_ols_3, type = "HC1")))
+robustse_2sls <- sqrt(diag(vcovHC(mod_2sls, type = "HC1")))
 
 ```
 
 
-```{r, results='asis', message=F, comment='%', tidy=T}
+```{r ols_star, results='asis', message=F, comment='%', tidy=T}
 
-stargazer(mod_ols_1, mod_ols_2, mod_ols_3, header = F,
+stargazer(mod_ols_1, mod_ols_2, mod_2sls, header = F,
           font.size = "footnotesize", se = list(robustse_ols1,
-                                     robustse_ols2,
-                                     robustse_ols3))
+         robustse_ols2,
+         robustse_2sls))
 
 ```
 
 
-## Fixed Effects
+## Fixed- and Random Effects Regression
 
 
-```{r}
+```{r FE}
 
-mod_fe_1 <- plm(afflicted_rate ~ stringency_index + smokers
-                 + handwashing_facilities + gdp_per_capita_log
-                 + aged_65_older + extreme_poverty + diabetes_prevalence 
-                 + life_expectancy + human_development_index, 
-                 data = world_df, 
-                 index = c("location"), 
-                model = "within", effect = "individual")
+mod_fe_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
+   + handwashing_facilities + aged_65_older + diabetes_prevalence 
+   + life_expectancy + human_development_index + hosp_beds_1k, 
+   data = world_df, 
+   index = c("location"), 
+  model = "within", effect = "individual")
 
 
 robustse_fe1 <- sqrt(diag(vcovHC(mod_fe_1, type = "HC1")))
@@ -498,41 +364,74 @@ robustse_fe1 <- sqrt(diag(vcovHC(mod_fe_1, type = "HC1")))
 ```
 
 
-
-```{r, results='asis', message=F, comment='%', tidy=T}
-stargazer(mod_fe_1, header = F,
-          font.size = "small", se = list(robustse_fe1))
-```
-
-
-## Random Effects
-
-
-```{r}
-mod_re_1 <- plm(afflicted_rate ~ stringency_index + smokers
-                 + handwashing_facilities + gdp_per_capita_log
-                 + aged_65_older + extreme_poverty + diabetes_prevalence 
-                 + life_expectancy + human_development_index 
-                + reproduction_rate, 
-                 data = world_df, 
-                 index = c("location"),
-                model = "random")
-
+```{r RE}
+mod_re_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
+                   + handwashing_facilities
+                   + aged_65_older + diabetes_prevalence
+                   + human_development_index
+                  + reproduction_rate,
+                   data = world_df,
+                   index = c("location"),
+                  model = "random")
 
 robustse_re1 <- sqrt(diag(vcovHC(mod_re_1, type = "HC1")))
 ```
 
 
-```{r, results='asis', message=F, comment='%', tidy=T}
-stargazer(mod_re_1, header = F,
+```{r fe_star, results='asis', message=F, comment='%', tidy=T}
+stargazer(mod_fe_1, mod_re_1, header = F,
           font.size = "small", se = list(robustse_re1))
 ```
 
-It is important to note that with a lot of Covid data, the reliability of measurement error 
-and false estimates is questionable. The fixed, and random effects might exacerbate this problem.
-In this case, it seems that OLS pooled regression, might perform better in explaining the behaviour 
-in the defined 'afflicted_rate' variable.
+It is important to note that with a lot of Covid data, the reliability of 
+measurement error and false estimates is questionable. The fixed, and random 
+effects might exacerbate this problem. In this case, it seems that OLS pooled 
+regression, might perform better in explaining the behaviour in the defined 
+'afflicted_rate' variable.
 
 
 
 
+# References
+
+<div id="refs"></div>
+
+# Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("setup","get-labels", "function_scripts",
+                       "fe_star", "ols_star", "FE", "RE", "OLS",
+                       "cor_plot", "descr", "scale_cons", "cons_plot",
+                       "range_cons", "scale_var", "var_plot", "afflicted",
+                       "range_var"))
+```
+
+```{r all-code, ref.label=labs, eval=FALSE}
+```
+
+
+## Functional Code
+
+```{r function_scripts, echo=FALSE}
+
+afflicted_plot
+cardio_plot
+cols_range 
+cols_range_constant 
+cor_plot1
+cor_plot2
+cumulative_test_plot  
+cumulative_vax_plot  
+experiment_aggregate_week
+experiment_trim 
+extract_all
+extract_continents  
+feature_adj_all 
+gdp_plot
+pop_density_plot
+scale_bigs_constant
+scale_bigs_cumsum  
+scale_bigs_scale
+start_date
+```
