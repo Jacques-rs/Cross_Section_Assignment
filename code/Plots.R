@@ -26,10 +26,24 @@ afflicted_plot <- function(df){
                               x = date)) +
         geom_area(position = "stack", stat = "identity", alpha = 0.5) +
         theme(legend.position="none") +
-        theme(axis.text.x = element_text(size = 10),
+        theme(axis.text.x = element_blank(),
               axis.title = element_text(face = "bold"),
               axis.line = element_line(colour = "grey50", size = 1)) +
         scale_y_continuous("Afflicated Rate")
+
+    return(plot)
+}
+
+stringency_plot <- function(df){
+
+    plot <- df %>% ggplot(aes(fill=location, y = stringency_index/206,
+                              x = date)) +
+        geom_area(position = "stack", stat = "identity", alpha = 0.5) +
+        theme(legend.position="none") +
+        theme(axis.text.x = element_blank(),
+              axis.title = element_text(face = "bold"),
+              axis.line = element_line(colour = "grey50", size = 1)) +
+        scale_y_continuous("Covid Stringency Index")
 
     return(plot)
 }
@@ -109,7 +123,6 @@ gdp_plot <- function(df){
         scale_y_continuous("GDP per Capita") +
         scale_x_discrete("Country") +
         labs(title = "GDP per capita")
-    # subtitle = "Nonlinear distribution suggests a\nlog transformation")
 
     return(plot)
 }
@@ -128,7 +141,6 @@ pop_density_plot <- function(df){
         scale_y_continuous("Population Density") +
         scale_x_discrete("Country") +
         labs(title = "Population Density")
-    # subtitle = "Presence of outliers suggests scaling\nsuch that outliers remain\nrelatively present, i.e. normalisation")
 
     return(plot)
 }
@@ -140,7 +152,6 @@ cor_plot1 <- function(df){
                                          gdp_per_capita_log,
                                          population_density_norm,
                                          cardiovasc_death_rate_norm,
-                                         reproduction_rate,
                                          new_tests_cum_per_1000,
                                          new_vaccinations_cum_per_1000,
                                          median_age, extreme_poverty,

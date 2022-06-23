@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.6.22)  23 JUN 2022 19:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.6.22)  23 JUN 2022 21:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -612,44 +612,44 @@ Package hyperref Info: Link coloring ON on input line 209.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 241.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 241.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 241.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 241.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 241.
+(Font)              <9> on input line 242.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 241.
+(Font)              <6> on input line 242.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 241.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 241.
+(Font)              <5> on input line 242.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 241.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 241.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 242.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 241.
+(Font)              <10.95> on input line 242.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 241.
+(Font)              <8> on input line 242.
 [1
 
 
@@ -658,129 +658,149 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \openout6 = `Cross_Section_Assignment.toc'.
 
 [2] [3]
-<Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf, id=118, 433.62pt x 361.35pt>
+<Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf, id=123, 433.62pt x 361.35pt>
 File: Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf Graphic file (type pdf)
 <use Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf>
-Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf  used on input line 334.
+Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf  used on input line 335.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
-<Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf, id=119, 433.62pt x 361.35pt>
+<Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf, id=124, 433.62pt x 361.35pt>
 File: Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf Graphic file (type pdf)
 <use Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf>
-Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf  used on input line 336.
+Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf  used on input line 337.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
 [4 <./Cross_Section_Assignment_files/figure-latex/afflicted-1.pdf>] [5 <./Cross_Section_Assignment_files/figure-latex/var_plot-1.pdf>]
-<Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf, id=144, 433.62pt x 361.35pt>
+<Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf, id=149, 433.62pt x 361.35pt>
 File: Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf Graphic file (type pdf)
 <use Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf>
-Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf  used on input line 371.
+Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf  used on input line 372.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
-[6 <./Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf>] [7]
+[6 <./Cross_Section_Assignment_files/figure-latex/cons_plot-1.pdf>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 431.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 394.
 <Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf, id=161, 433.62pt x 361.35pt>
 File: Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf Graphic file (type pdf)
 <use Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf>
-Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf  used on input line 448.
+Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf  used on input line 411.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
-[8]
-<Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf, id=168, 433.62pt x 361.35pt>
+[7]
+<Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf, id=169, 433.62pt x 361.35pt>
 File: Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf Graphic file (type pdf)
 <use Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf>
-Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf  used on input line 454.
+Package pdftex.def Info: Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf  used on input line 417.
 (pdftex.def)             Requested size: 433.61894pt x 361.34912pt.
-[9 <./Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf>]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 466.
+[8 <./Cross_Section_Assignment_files/figure-latex/cor_plot-1.pdf>]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 429.
 (c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [10 <./Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf>] [11] [12]
+) [9 <./Cross_Section_Assignment_files/figure-latex/core_plot2-1.pdf>] [10]
+Overfull \hbox (9.20802pt too wide) in paragraph at lines 500--548
+ [][] 
+ []
+
+[11] [12]
+Overfull \hbox (16.72766pt too wide) in paragraph at lines 589--589
+[]\T1/lmtt/m/n/10.95 ## data:  afflicted_rate ~ stringency_index.x + smokers + handwashing_facilities +  ...[] 
+ []
+
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 624.
+(Font)              <10> on input line 602.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 624.
-[13] [14] [15] [16]
-Overfull \hbox (114.45613pt too wide) in paragraph at lines 790--790
-[]\T1/lmtt/m/n/10.95 ##         alpha = 0.5) + theme(legend.position = "none") + theme(axis.text.x = element_text(size = 10),[] 
+(Font)              <7> on input line 602.
+[13]
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 649.
+(c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
+File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [14] [15] [16] [17] [18] [19]
+Overfull \hbox (68.46626pt too wide) in paragraph at lines 921--921
+[]\T1/lmtt/m/n/10.95 ##         alpha = 0.5) + theme(legend.position = "none") + theme(axis.text.x = element_blank(),[] 
  []
 
 
-Overfull \hbox (68.46626pt too wide) in paragraph at lines 790--790
+Overfull \hbox (68.46626pt too wide) in paragraph at lines 921--921
 []\T1/lmtt/m/n/10.95 ##         axis.title = element_text(face = "bold"), axis.line = element_line(colour = "grey50",[] 
  []
 
 
-Overfull \hbox (28.22513pt too wide) in paragraph at lines 804--804
+Overfull \hbox (28.22513pt too wide) in paragraph at lines 935--935
 []\T1/lmtt/m/n/10.95 ##         theme(axis.text.x = element_blank(), axis.title = element_text(face = "bold"),[] 
  []
 
 
-Overfull \hbox (33.97386pt too wide) in paragraph at lines 804--804
+Overfull \hbox (33.97386pt too wide) in paragraph at lines 935--935
 []\T1/lmtt/m/n/10.95 ##         scale_y_continuous("Cardiovascular Death Rate") + scale_x_discrete("Country") +[] 
  []
 
-[17] [18]
-Overfull \hbox (79.96373pt too wide) in paragraph at lines 876--876
+[20]
+Overfull \hbox (79.96373pt too wide) in paragraph at lines 1006--1006
 []\T1/lmtt/m/n/10.95 ##         group = location, col = location)) + geom_line() + theme(axis.text.x = element_blank(),[] 
  []
 
 
-Overfull \hbox (68.46626pt too wide) in paragraph at lines 876--876
+Overfull \hbox (68.46626pt too wide) in paragraph at lines 1006--1006
 []\T1/lmtt/m/n/10.95 ##         axis.title = element_text(face = "bold"), axis.line = element_line(colour = "grey50",[] 
  []
 
-
-Overfull \hbox (28.22513pt too wide) in paragraph at lines 892--892
+[21]
+Overfull \hbox (28.22513pt too wide) in paragraph at lines 1022--1022
 []\T1/lmtt/m/n/10.95 ##     plot <- df %>% ungroup() %>% group_by(location) %>% mutate(label = if_else(date ==[] 
  []
 
 
-Overfull \hbox (68.46626pt too wide) in paragraph at lines 892--892
+Overfull \hbox (68.46626pt too wide) in paragraph at lines 1022--1022
 []\T1/lmtt/m/n/10.95 ##         axis.title = element_text(face = "bold"), axis.line = element_line(colour = "grey50",[] 
  []
 
 
-Overfull \hbox (5.2302pt too wide) in paragraph at lines 912--912
+Overfull \hbox (5.2302pt too wide) in paragraph at lines 1042--1042
 []\T1/lmtt/m/n/10.95 ##         "median_age", "aged_65_older", "extreme_poverty", "cardiovasc_death_rate",[] 
  []
 
-[19]
-Overfull \hbox (166.19473pt too wide) in paragraph at lines 940--940
+[22]
+Overfull \hbox (166.19473pt too wide) in paragraph at lines 1070--1070
 []\T1/lmtt/m/n/10.95 ##         select(-c(iso_code, continent, tests_units)) %>% rename(hosp_beds_1k = hospital_beds_per_thousand) %>%[] 
  []
 
-[20]
-Overfull \hbox (51.22006pt too wide) in paragraph at lines 975--975
+[23]
+Overfull \hbox (51.22006pt too wide) in paragraph at lines 1105--1105
 []\T1/lmtt/m/n/10.95 ##         gdp_per_capita, mean), y = gdp_per_capita)) + theme(axis.text.x = element_blank(),[] 
  []
 
 
-Overfull \hbox (68.46626pt too wide) in paragraph at lines 975--975
+Overfull \hbox (68.46626pt too wide) in paragraph at lines 1105--1105
 []\T1/lmtt/m/n/10.95 ##         axis.title = element_text(face = "bold"), axis.line = element_line(colour = "grey50",[] 
  []
 
 
-Overfull \hbox (28.22513pt too wide) in paragraph at lines 989--989
+Overfull \hbox (28.22513pt too wide) in paragraph at lines 1119--1119
 []\T1/lmtt/m/n/10.95 ##         theme(axis.text.x = element_blank(), axis.title = element_text(face = "bold"),[] 
  []
 
-[21]
-Overfull \hbox (28.22513pt too wide) in paragraph at lines 1034--1034
+[24]
+Overfull \hbox (28.22513pt too wide) in paragraph at lines 1164--1164
 []\T1/lmtt/m/n/10.95 ##         theme(axis.text.x = element_blank(), axis.title = element_text(face = "bold"),[] 
  []
 
 No file Cross_Section_Assignment.bbl.
-[22] (./Cross_Section_Assignment.aux)
+[25] (./Cross_Section_Assignment.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `Cross_Section_Assignment.out' has not changed.
-(rerunfilecheck)             Checksum: E7D88039218BF83AFA52A2F86B34E32B;2649.
+(rerunfilecheck)             Checksum: 0BD8BE5C75877E2F63179C211D8C8884;2738.
  ) 
 Here is how much of TeX's memory you used:
- 16867 strings out of 479997
- 316494 string characters out of 5886778
- 590128 words of memory out of 5000000
- 34709 multiletter control sequences out of 15000+600000
- 537508 words of font info for 81 fonts, out of 8000000 for 9000
+ 16920 strings out of 479997
+ 317301 string characters out of 5886778
+ 586260 words of memory out of 5000000
+ 34747 multiletter control sequences out of 15000+600000
+ 537813 words of font info for 82 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  72i,12n,77p,355b,1030s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}<c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/gerar/AppData/Roaming/
+{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}<c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi9.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr9.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri9.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy6.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy9.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt9.pfb><c:/Users/gerar/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb>
+Output written on Cross_Section_Assignment.pdf (25 pages, 475549 bytes).
+PDF statistics:
+ 400 PDF objects out of 1000 (max. 8388607)
+ 317 compressed objects within 4 object streams
+ 74 named destinations out of 1000 (max. 500000)
+ 162 words of extra memory for PDF output out of 10000 (max. 10000000)
+

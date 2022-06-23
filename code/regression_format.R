@@ -44,7 +44,8 @@ experiment_trim <- function(df){
         ungroup() %>%
         select(-c(year_quarter)) %>%
         group_by(location, date) %>%
-        # mutate(death_rate = (new_deaths/new_cases)*100) %>%
+        # mutate(afflicted_rate = ((new_deaths+ icu_patients
+        #                             + hosp_patients)/new_cases)*100) %>%
         mutate(afflicted_rate = ((new_deaths + icu_patients
                                   + hosp_patients)/population * 10000),
                .keep = "unused") %>%

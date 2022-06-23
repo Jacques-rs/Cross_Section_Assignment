@@ -3,7 +3,7 @@
 # Remove comments and add values where applicable.
 # The descriptions below should be self-explanatory
 
-title: "Cross Section Assignment"
+title: "Cross Section Assignment - The Effect of Lockdowns on the Severity Covid-19"
 #subtitle: "This will appear as Right Header"
 
 documentclass: "elsarticle"
@@ -191,7 +191,9 @@ Thus, want to scale: `new_test, new_vaccinations`
 Plotting to see whether there is any irregularity in the distribution of the dependent variable.
 
 ```{r afflicted, echo=FALSE}
-afflicted_plot(world_df)
+a1 <- afflicted_plot(world_df)
+a2 <- stringency_plot(world_df)
+grid.arrange(a1, a2, ncol=2)
 ```
 
 
@@ -228,18 +230,14 @@ g3 <- pop_density_plot(world_df)
 grid.arrange(g1, g2, g3, nrow=2)
 ```
 
+The non-linear distribution of Real GDP suggests a transformation. Presence 
+of outliers and large range in `population_density` suggests normalisation 
+scaling. The same goes for the cardiovascular death rate.
 
 ```{r scale_cons, echo=TRUE}
 world_df <- world_df %>% scale_bigs_constant(.)
 ```
 
-
-Now we can check all the descriptive stats for all the columns
-```{r descr, echo=FALSE}
-options(scipen=999)
-world_df %>% cols_range(df = ., constant_features = c("location", "date"))
-options(scipen=0)
-```
 
 The value of the stringency index is assumed to have a delayed effect on the 
 coronavirus, therefore, to account for this, one quarter lagged average 
@@ -260,7 +258,6 @@ quick_df <- world_df %>%
 world_df <- quick_df %>% left_join(world_df, by = c("location", "date")) %>% 
     select(-stringency_index.y)
 ```
-
 
 
 # Correlation Analysis
@@ -312,11 +309,13 @@ mod_ols_1 <- plm(afflicted_rate ~ stringency_index.x +
 
 mod_ols_2 <- plm(afflicted_rate ~ stringency_index.x + smokers
    + handwashing_facilities + aged_65_older + hosp_beds_1k
-   + human_development_index + reproduction_rate, 
+   + human_development_index + reproduction_rate 
+   + new_vaccinations_cum_per_1000, 
    data = world_df, 
    index = c("location", "date"), model = "pooling")
 
-mod_1sls <- plm(stringency_index.x ~ gdp_per_capita_log,
+mod_1sls <- plm(stringency_index.x ~ gdp_per_capita_log 
+                + population_density_norm,
                 data = world_df, 
                 index = c("location", "date"), model = "pooling")
 
@@ -324,7 +323,7 @@ stringency_hat <- fitted.values(mod_1sls)
 
 mod_2sls <- plm(afflicted_rate ~ stringency_hat + smokers
    + handwashing_facilities + aged_65_older + hosp_beds_1k
-   + human_development_index, 
+   + human_development_index + new_vaccinations_cum_per_1000, 
    data = world_df, 
    index = c("location", "date"), model = "pooling")
 
@@ -355,7 +354,7 @@ stargazer(mod_ols_1, mod_ols_2, mod_2sls, header = F,
 
 mod_fe_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
    + handwashing_facilities + aged_65_older + hosp_beds_1k
-   + human_development_index, 
+   + human_development_index + new_vaccinations_cum_per_1000, 
    data = world_df, 
    index = c("location"), 
   model = "within", effect = "individual")
@@ -369,12 +368,13 @@ robustse_fe1 <- sqrt(diag(vcovHC(mod_fe_1, type = "HC1")))
 ```{r RE}
 mod_re_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
    + handwashing_facilities + aged_65_older + hosp_beds_1k
-   + human_development_index,
+   + human_development_index + new_vaccinations_cum_per_1000,
                    data = world_df,
                    index = c("location"),
-                  model = "random")
+                  model = "random", effect = "individual")
 
 robustse_re1 <- sqrt(diag(vcovHC(mod_re_1, type = "HC1")))
+phtest(mod_fe_1, mod_re_1)
 ```
 
 
@@ -385,7 +385,40 @@ stargazer(mod_fe_1, mod_re_1, header = F,
 ```
 
 
+```{r}
+knitr::kable(tidy(pFtest(mod_fe_1, mod_2sls)), caption=
+        "Fixed effects test: Ho:'No fixed effects'")
+```
+
+
 ## Interpretations
+
+It is not surprising that the health measures such as proportion the of smokers 
+larger older generations had a significant impact on the amount of individuals
+that were afflicted from covid. This holds for the OLS, 2SLS, and the RE model. 
+It is surprising, however, that the availability of handwashing facilities had 
+no significant impact, except for in the RE model.
+
+The Hausman test results in a p-value of 0.8877 which implies the null 
+hypothesis cannot be rejected and either model, RE or FE is consistent, however,
+RE is more efficient. 
+
+Table 4.3 illustrates the motivation for the use of a fixed effects model.
+The `pFtest` compares OLS with Fixed Effects. The result suggests a rejection
+of the null in favour of the Fixed effects model. That is, there exists
+fixed effects whitin the data.
+
+Most importantly, independent of which model is chosen, there seems to be no
+significance between the stringency index and afflicted rate. The models
+presented here offer variable approaches to analysing the causal effect.
+The results should not be taken verbatim, however. There are alternative
+non-parametric models hat can allow for a more accurate anaylisis. Similar
+attempts have been made, such as the recen paper by @ML. Their methods 
+also suggest a machine learning based model can offer an ideal substitute.
+Based on the results from above, the lockdown measures did not have a significant
+impact on those individuals severly affected by Covid-19, over and above the 
+normal effects of a widespread flu.
+
 
 ### Measurement Error & Bias
 
@@ -409,32 +442,72 @@ playing a role.
 The Instrumental Variable regression, by method of two stage least squares, 
 requires the following assumptions to hold for an unbiased estimate:
 
-Instrument Variable: reproduction rate, such that it affects the afflicted rate
-stringency through the stringency index
+Instrument Variable:  real GDP, and population density, such that they affect
+the afflicted rate through the stringency index
 
 1. Exclusion Restriction
 
-This requires that the reproduction rate only affects the afflicted rate through
-the stringency index.
+This requires that the real GDP, and population density only affects the 
+afflicted rate through the stringency index.
 
-This assumption is less likely to hold. however, since the assumption is that
-the degree of harm that the virus inflicts should reduce even if the 
-infectiousness rises due to vaccinations etc. There is still a possibility 
-that this might hold. Also, the expection is that if lockdowns are reasonably
-effective, that the contagiousness of the virus should not affect the 
-afflicted rate per ten thousand individuals in the population.
+This assumption very likely to holds. There is no reason to believe that real
+GDP affects the afflicted rate per ten thousand individuals in the population.
+There is however, a possibility that population density has an effect on
+this.
 
 2. Random Assignment
 
-This requires that there be no difference between the potential outcomes 
+This requires that there be no difference between the potential outcomes
+
+
+3. Instrument Relevance
+
+This requires that real GDP and population density actually have a significant
+effect on the the stringency index value. Intuitively, this should be the case
+since wealthier countries have more resources to apply stricter rules and more
+densely populated areas ought to require more strict policy to combat the 
+effects if Covid-19.
+
+4. Monotonicity
+
+Whether any country could be expected to have endorsed less strict policy
+based on their high real GDP or high population density.
+
+For the latter case, this is unlikely the case. However, some countries might
+have been more relaxed from having more resources to cope with the effects
+of Covid.
+
 
 ### Assumptions of Fixed- and Random Effects
 
+The assumptions that need to hold here, include:
 
+1. Type of Unconfoundedness
+
+Conditioning on the fixed effects per country (and other covariates), there 
+should be no other reason for selection into treatment, i.e. having more 
+stringent policy. This does seem likely to hold.
+
+2. Same Time Trends
+
+There is no way to assert that this assumption holds with certainty. 
+
+
+# Concluion
+
+There does not seem to be a significant causal effect of the level of strictness
+regarding covid lockdown and the rate of afflicted individuals per ten thousand
+people in a population. There exists some room for improvement on the models
+presented hre. Perhaps a non-linear model such as a machine learning based 
+option would yield more accurate results.
+
+\newpage
 
 # References
 
 <div id="refs"></div>
+
+\newpage
 
 # Appendix
 
