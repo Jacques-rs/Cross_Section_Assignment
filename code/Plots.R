@@ -144,7 +144,9 @@ cor_plot1 <- function(df){
                                          new_tests_cum_per_1000,
                                          new_vaccinations_cum_per_1000,
                                          median_age, extreme_poverty,
-                                         diabetes_prevalence)) %>%
+                                         diabetes_prevalence,
+                                         new_cases, reproduction_rate,
+                                         new_cases)) %>%
         cor(.)
     plot2 <- plot1 %>%
         corrplot(., method = "color", order = "hclust", tl.srt=0, diag = F,
@@ -161,10 +163,10 @@ cor_plot2 <- function(df){
     plot1 <- df %>% ungroup() %>% select(c(gdp_per_capita_log,
                                           population_density_norm,
                                            cardiovasc_death_rate_norm,
-                                           reproduction_rate,
                                           new_vaccinations_cum_per_1000,
                                            median_age, extreme_poverty,
-                                          diabetes_prevalence)) %>%
+                                          diabetes_prevalence,
+                                          afflicted_rate)) %>%
         cor(.)
 
     plot2 <- plot1 %>%

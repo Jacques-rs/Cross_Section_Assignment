@@ -281,10 +281,11 @@ names(world_df)
 ```
 
 The components that will form a part of the larger OLS regression is therefore
-the
+the:
+
 - stringency index `stringency_index.x`
 
-- average life expectancy `life_expectancy`
+<!-- - average life expectancy `life_expectancy` -->
 
 - development index `human_development_index`
 
@@ -305,26 +306,25 @@ Hand washing facilities is added based on intuitive interpretation
 
 ```{r OLS}
 mod_ols_1 <- plm(afflicted_rate ~ stringency_index.x +
-   handwashing_facilities,
+   handwashing_facilities + reproduction_rate,
     index = c("location", "date"), data = world_df, 
    model = "pooling")
 
 mod_ols_2 <- plm(afflicted_rate ~ stringency_index.x + smokers
-   + handwashing_facilities + aged_65_older + diabetes_prevalence 
-   + life_expectancy + human_development_index + hosp_beds_1k, 
+   + handwashing_facilities + aged_65_older + hosp_beds_1k
+   + human_development_index + reproduction_rate, 
    data = world_df, 
    index = c("location", "date"), model = "pooling")
 
-mod_1sls <- plm(stringency_index.x ~ reproduction_rate 
-                + new_vaccinations_cum_per_1000,
+mod_1sls <- plm(stringency_index.x ~ gdp_per_capita_log,
                 data = world_df, 
                 index = c("location", "date"), model = "pooling")
 
 stringency_hat <- fitted.values(mod_1sls)
 
 mod_2sls <- plm(afflicted_rate ~ stringency_hat + smokers
-   + handwashing_facilities + aged_65_older + diabetes_prevalence 
-   + life_expectancy + human_development_index + hosp_beds_1k, 
+   + handwashing_facilities + aged_65_older + hosp_beds_1k
+   + human_development_index, 
    data = world_df, 
    index = c("location", "date"), model = "pooling")
 
@@ -341,7 +341,9 @@ robustse_2sls <- sqrt(diag(vcovHC(mod_2sls, type = "HC1")))
 stargazer(mod_ols_1, mod_ols_2, mod_2sls, header = F,
           font.size = "footnotesize", se = list(robustse_ols1,
          robustse_ols2,
-         robustse_2sls))
+         robustse_2sls), column.labels = c("OLS", 
+                                             "OLS",
+                                             "2SLS"))
 
 ```
 
@@ -352,8 +354,8 @@ stargazer(mod_ols_1, mod_ols_2, mod_2sls, header = F,
 ```{r FE}
 
 mod_fe_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
-   + handwashing_facilities + aged_65_older + diabetes_prevalence 
-   + life_expectancy + human_development_index + hosp_beds_1k, 
+   + handwashing_facilities + aged_65_older + hosp_beds_1k
+   + human_development_index, 
    data = world_df, 
    index = c("location"), 
   model = "within", effect = "individual")
@@ -366,10 +368,8 @@ robustse_fe1 <- sqrt(diag(vcovHC(mod_fe_1, type = "HC1")))
 
 ```{r RE}
 mod_re_1 <- plm(afflicted_rate ~ stringency_index.x + smokers
-                   + handwashing_facilities
-                   + aged_65_older + diabetes_prevalence
-                   + human_development_index
-                  + reproduction_rate,
+   + handwashing_facilities + aged_65_older + hosp_beds_1k
+   + human_development_index,
                    data = world_df,
                    index = c("location"),
                   model = "random")
@@ -380,15 +380,55 @@ robustse_re1 <- sqrt(diag(vcovHC(mod_re_1, type = "HC1")))
 
 ```{r fe_star, results='asis', message=F, comment='%', tidy=T}
 stargazer(mod_fe_1, mod_re_1, header = F,
-          font.size = "small", se = list(robustse_re1))
+          font.size = "small", se = list(robustse_re1), column.labels = c("FE", 
+                                             "RE"))
 ```
 
-It is important to note that with a lot of Covid data, the reliability of 
-measurement error and false estimates is questionable. The fixed, and random 
-effects might exacerbate this problem. In this case, it seems that OLS pooled 
-regression, might perform better in explaining the behaviour in the defined 
-'afflicted_rate' variable.
 
+## Interpretations
+
+### Measurement Error & Bias
+
+It is important to note that the unexpected nature of Covid-19 resulted in
+a lot of "on the fly" data collection which can lead to larger measurement 
+errors. The reliability of measurement error and false estimates in this case 
+is questionable. Furthermore, the fixed- and random effects regressions can
+exacerbate this problem. In that case, it would suggest that a pooled OLS 
+regression offer some particular benefits.
+
+### Assumptions of OLS:
+
+There exists an inherent endogeneity in this dataset, since there exists some
+country specific factors that might have led to lockdowns being more effective
+or having more resources to withstand the aderse effects of lockowns. For this
+reason, the last OLS model includes a two stage least squares regression model
+to mitigate this issue. Additionally, the Random- and Fixed effects models are
+also fitted. These can more precisely account for country specific factors 
+playing a role.
+
+The Instrumental Variable regression, by method of two stage least squares, 
+requires the following assumptions to hold for an unbiased estimate:
+
+Instrument Variable: reproduction rate, such that it affects the afflicted rate
+stringency through the stringency index
+
+1. Exclusion Restriction
+
+This requires that the reproduction rate only affects the afflicted rate through
+the stringency index.
+
+This assumption is less likely to hold. however, since the assumption is that
+the degree of harm that the virus inflicts should reduce even if the 
+infectiousness rises due to vaccinations etc. There is still a possibility 
+that this might hold. Also, the expection is that if lockdowns are reasonably
+effective, that the contagiousness of the virus should not affect the 
+afflicted rate per ten thousand individuals in the population.
+
+2. Random Assignment
+
+This requires that there be no difference between the potential outcomes 
+
+### Assumptions of Fixed- and Random Effects
 
 
 
