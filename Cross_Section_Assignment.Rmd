@@ -95,7 +95,7 @@ output:
 
 <!-- First: default preferences for chunk options: -->
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
         fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H',
         purl = TRUE)
